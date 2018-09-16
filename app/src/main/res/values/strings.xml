@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Bee Docs</string>
+    <string name="oficios">Oficios</string>
+    <string name="memoran">Memoran</string>
+    <string name="circular">Circular</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+</resources>
