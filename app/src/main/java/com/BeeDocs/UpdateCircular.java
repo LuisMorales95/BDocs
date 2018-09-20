@@ -3,8 +3,10 @@ package com.BeeDocs;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,8 +25,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -34,6 +39,7 @@ import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -41,14 +47,20 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,8 +69,20 @@ import java.util.Objects;
 
 import com.BeeDocs.GlideApp;
 import com.BeeDocs.R;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
 
+import static com.BeeDocs.Constant.SPApellidoM_persona;
+import static com.BeeDocs.Constant.SPApellidoP_persona;
+import static com.BeeDocs.Constant.SPNombre_persona;
+import static com.BeeDocs.Constant.WS_SendEmail;
 import static com.BeeDocs.Constant.WS_UpdateCircular;
+import static com.BeeDocs.Constant.getgallery;
+import static com.BeeDocs.Constant.getgallery_entregado;
 import static com.BeeDocs.Officios.baseOficios;
 import static com.BeeDocs.SharedPreference.GETSharedPreferences;
 
@@ -96,10 +120,16 @@ public class UpdateCircular extends AppCompatActivity {
     private File imageEntregada = null;
     private OutputStream outputStreamEntregada = null;
     
+    ProgressDialog progressDFont;
+    private ImageView NOfficio_ShareDoc;
+    private static String Carpeta_App = "com.BeeDocs";
+    private static String Carpeta_PDF = "PDFs";
+    
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nuevo_officio);
+        progressDFont = new ProgressDialog(this);
         baseOficios = new BaseOficios(this);
         ((TextView) findViewById(R.id.NOfficio_Titulo)).setText("Actualizar Circular");
         NOfficio_RutaPendiente = (TextView) findViewById(R.id.NOfficio_RutaPendiente);
@@ -115,8 +145,24 @@ public class UpdateCircular extends AppCompatActivity {
             public void onClick(View v) {
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
-                if (modelCiruclar.getRutaCircularP().equals("")) {
-                    getcamara();
+                if (mCurrentPhotoBase64Pendiente.equals("")) {
+                    new AlertDFont.Builder(UpdateCircular.this)
+                            .setMessage("La imagen se tomara de: ")
+                            .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) { getcamara(); }})
+                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNeutralButton("Galery", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getgallery();
+                                }
+                            }).show();
                 } else {
                     final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(UpdateCircular.this);
                     alerBuilder1.setMessage("Desea recapturar la imagen?")
@@ -125,7 +171,26 @@ public class UpdateCircular extends AppCompatActivity {
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    getcamara();
+                                    new AlertDFont.Builder(UpdateCircular.this)
+                                            .setMessage("La imagen se tomara de: ")
+                                            .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getcamara();
+                                                }
+                                            })
+                                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            })
+                                            .setNeutralButton("Galery", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getgallery();
+                                                }
+                                            }).show();
                                 }
                             })
                             .setNegativeButton(android.R.string.cancel, null).show();
@@ -224,8 +289,27 @@ public class UpdateCircular extends AppCompatActivity {
             public void onClick(View v) {
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
-                if (modelCiruclar.getRutaCircularR().equals("")) {
-                    getcamaraEntregada();
+                if (mCurrentPhotoBase64Entregada.equals("")) {
+                    new AlertDFont.Builder(UpdateCircular.this)
+                            .setMessage("La imagen se tomara de: ")
+                            .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getcamaraEntregada();
+                                }
+                            })
+                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNeutralButton("Galery", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getgallery_entregado();
+                                }
+                            }).show();
                 } else {
                     final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(UpdateCircular.this);
                     alerBuilder1.setMessage("Desea recapturar la imagen?")
@@ -234,11 +318,29 @@ public class UpdateCircular extends AppCompatActivity {
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    getcamaraEntregada();
+                                    new AlertDFont.Builder(UpdateCircular.this)
+                                            .setMessage("La imagen se tomara de: ")
+                                            .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getcamaraEntregada();
+                                                }
+                                            })
+                                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            })
+                                            .setNeutralButton("Galery", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getgallery_entregado();
+                                                }
+                                            }).show();
                                 }
                             })
                             .setNegativeButton(android.R.string.cancel, null).show();
-                    alerBuilder1.create();
                 }
             }
         });
@@ -404,7 +506,42 @@ public class UpdateCircular extends AppCompatActivity {
                 }
             }
         });
-        
+        NOfficio_ShareDoc = (ImageView) findViewById(R.id.NOfficio_ShareDoc);
+        NOfficio_ShareDoc.setVisibility(View.VISIBLE);
+        NOfficio_ShareDoc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String Email="";
+                AlertDFont.Builder dialogBuilder = new AlertDFont.Builder(UpdateCircular.this);
+                LayoutInflater inflater = UpdateCircular.this.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.singleedittext, null);
+                dialogBuilder.setView(dialogView);
+                final EditText email = (EditText) dialogView.findViewById(R.id.SingleEmail);
+                email.setHint("Escriba el Correo");
+                dialogBuilder.setTitle("Correo Electronico");
+                dialogBuilder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (!email.getText().toString().isEmpty()&&isValidEmail(email.getText().toString())){
+                            Toast.makeText(UpdateCircular.this, "Correo valido", Toast.LENGTH_SHORT).show();
+                            progressDFont.setMessage("Comenzando Proceso PDF");
+                            progressDFont.setCancelable(false);
+                            progressDFont.show();
+                            new UpdateCircular.Share_PDF(UpdateCircular.this,email.getText().toString()).execute();
+                        }else{
+                            Toast.makeText(UpdateCircular.this, "Correo invalido o vacio", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.show();
+            }
+        });
     }
     
     private void UpdateMemoran(String Id_Memoran,
@@ -510,11 +647,39 @@ public class UpdateCircular extends AppCompatActivity {
         if (requestCode == Constant.Camera_CODE_Entregado && resultCode == RESULT_OK) {
             setPicEntregada();
         }
+        if (requestCode == Constant.getgallery && resultCode == RESULT_OK){
+            try {
+                @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                InputStream inputStream = UpdateCircular.this.getContentResolver().openInputStream(data.getData());
+                String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
+                Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream));
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                mCurrentPhotoBase64Pendiente = Base64.encodeToString(os.toByteArray(), Base64.DEFAULT);
+                mCurrentPhotoNamePendiente = imageFileName + ".jpg";
+                NOfficio_RutaPendiente.setText(mCurrentPhotoNamePendiente);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        if (requestCode == getgallery_entregado && resultCode == RESULT_OK){
+            try {
+                @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                InputStream inputStream = UpdateCircular.this.getContentResolver().openInputStream(data.getData());
+                String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
+                Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream));
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                mCurrentPhotoBase64Entregada = Base64.encodeToString(os.toByteArray(), Base64.DEFAULT);
+                mCurrentPhotoNameEntregada = imageFileName + ".jpg";
+                NOfficio_RutaEntregada.setText(mCurrentPhotoNameEntregada);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
     
-    
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                              CAMARA PERMISSION
-    
     private void getcamara() {
         if (ContextCompat.checkSelfPermission(UpdateCircular.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(UpdateCircular.this, new String[]{
@@ -526,7 +691,6 @@ public class UpdateCircular extends AppCompatActivity {
             dispatchTakePictureIntent();
         }
     }
-    
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         
@@ -552,7 +716,6 @@ public class UpdateCircular extends AppCompatActivity {
             }
         }
     }
-    
     private File createImageFile() throws IOException {
         @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
@@ -565,7 +728,6 @@ public class UpdateCircular extends AppCompatActivity {
         mCurrentPhotoPathPendiente = imagePendiente.getAbsolutePath();
         return imagePendiente;
     }
-    
     private void setPic() {
         //TODO: Get the dimensions of the view;
         int targetWidth = 550;
@@ -603,11 +765,7 @@ public class UpdateCircular extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-    
-    
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                              CAMARA PERMISSION ENTREGADO
-    
-    
     private void getcamaraEntregada() {
         if (ContextCompat.checkSelfPermission(UpdateCircular.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(UpdateCircular.this, new String[]{
@@ -619,7 +777,6 @@ public class UpdateCircular extends AppCompatActivity {
             dispatchTakePictureIntentEntregada();
         }
     }
-    
     private void dispatchTakePictureIntentEntregada() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         
@@ -645,7 +802,6 @@ public class UpdateCircular extends AppCompatActivity {
             }
         }
     }
-    
     private File createImageFileEntregada() throws IOException {
         @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
@@ -658,7 +814,6 @@ public class UpdateCircular extends AppCompatActivity {
         mCurrentPhotoPathEntregada = imageEntregada.getAbsolutePath();
         return imageEntregada;
     }
-    
     private void setPicEntregada() {
         //TODO: Get the dimensions of the view;
         int targetWidth = 550;
@@ -697,5 +852,241 @@ public class UpdateCircular extends AppCompatActivity {
         }
     }
     
+    public static boolean isValidEmail(CharSequence target) {
+        return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
+    }
+    public class Share_PDF extends AsyncTask<Void,Boolean,Boolean> {
+        private Context context;
+        private String Email;
+        public Share_PDF(Context context, String email) {
+            this.context = context;
+            Email = email;
+        }
+        private File filehome=null;
+        private String NomenclaturaDate="";
+        private String nombre_completo;
+        
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                NomenclaturaDate = "ArchivoPDF" + timestamp + ".pdf";
+                Document document = new Document(PageSize.LETTER);
+                String StorageInterno = Environment.getExternalStorageDirectory().toString();
+                File file = new File(StorageInterno + File.separator + "Android" + File.separator + "data" + File.separator + Carpeta_App);
+                if (!file.exists()) { file.mkdir(); }
+                filehome = new File(file.getPath() + File.separator + Carpeta_PDF);
+                if (!filehome.exists()) { filehome.mkdir(); }
+                nombre_completo = Environment.getExternalStorageDirectory() + File.separator + "Android" + File.separator +
+                        "data" + File.separator + Carpeta_App + File.separator + Carpeta_PDF + File.separator + NomenclaturaDate;
+                File outputfile = new File(nombre_completo);
+                if (outputfile.exists()) {
+                    outputfile.delete();
+                }
+                PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(nombre_completo));
+                document.open();
+                document.addAuthor(GETSharedPreferences(SPNombre_persona, "") + " " +
+                        GETSharedPreferences(SPApellidoP_persona, "") +
+                        " " + GETSharedPreferences(SPApellidoM_persona, ""));
+                document.addCreator(getResources().getString(R.string.app_name));
+                document.addCreationDate();
+                document.addTitle(NomenclaturaDate);
     
+                XMLWorkerHelper xmlWorkerHelper = XMLWorkerHelper.getInstance();
+                String htmlToPDF = "<html><head></head><body> <h1>PDF</h1> </body></html>";
+                xmlWorkerHelper.parseXHtml(writer,document,new StringReader(htmlToPDF));
+                if (!modelCiruclar.getRutaCircularP().isEmpty()) {
+                    int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                    if (SDK_INT > 8) {
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+                    }
+                    String URL = Constant.URL_Address + modelCiruclar.getRutaCircularP();
+                    Image image = Image.getInstance(URL.replace(" ", "%20"));
+                    float scaler = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image.getWidth()) * 100;
+                    image.scalePercent(scaler);
+                    image.setAlignment(Image.ALIGN_CENTER | Image.BOTTOM);
+                    document.add(image);
+                }
+                if (!modelCiruclar.getRutaCircularR().isEmpty()) {
+                    int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                    if (SDK_INT > 8) {
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+                    }
+                    String URL2 = Constant.URL_Address + modelCiruclar.getRutaCircularR();
+                    Image image2 = Image.getInstance(URL2.replace(" ", "%20"));
+                    float scaler2 = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image2.getWidth()) * 100;
+                    image2.scalePercent(scaler2);
+                    image2.setAlignment(Image.ALIGN_CENTER | Image.BOTTOM);
+                    document.add(image2);
+                }
+                document.close();
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(UpdateCircular.this, "PDF Creado", Toast.LENGTH_LONG).show();
+                    }
+                });
+                return true;
+            } catch (DocumentException e) {
+                e.printStackTrace();
+                return false;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            progressDFont.dismiss();
+            if (aBoolean) {
+                String PDF_base64 = "";
+                File PDF = new File(nombre_completo);
+                byte[] bytes = new byte[(int) PDF.length()];
+                try {
+                    FileInputStream fileInputStream = new FileInputStream(PDF);
+                    fileInputStream.read(bytes);
+                    for (int j = 0; j < bytes.length; j++) {
+                        System.out.print((char) bytes[j]);
+                    }
+                    byte[] bytefileArray = FileUtils.readFileToByteArray(PDF);
+                    if (bytefileArray.length>0){
+                        PDF_base64 = android.util.Base64.encodeToString(bytefileArray, Base64.NO_WRAP);
+                    }
+                } catch (FileNotFoundException e) {
+                    System.out.println("File Not Found.");
+                    e.printStackTrace();
+                } catch (IOException e1) {
+                    System.out.println("Error Reading The File.");
+                    e1.printStackTrace();
+                }
+                EnviarCorreo(Email,NomenclaturaDate,PDF_base64,
+                        NOfficio_Nomenclatura.getText().toString(),
+                        NOfficio_Nombre.getText().toString(),
+                        departamentos[NOfficio_Dep_Sol.getSelectedItemPosition()],
+                        NOfficio_Dep_Envi.getText().toString(),
+                        NOfficio_Asunto.getText().toString(),
+                        estados[NOfficio_Estado.getSelectedItemPosition()],
+                        NOfficio_Ubicacion.getText().toString(),
+                        NOfficio_Notas.getText().toString()
+                );
+            }else{
+                boolean made=false;
+                String StorageInterno = Environment.getExternalStorageDirectory().toString();
+                File file = new File(StorageInterno + File.separator + "Android" + File.separator + "data" + File.separator + Carpeta_App);
+                if (!file.exists()) {
+                    made = file.mkdir();
+                }
+                if (made){
+                    new AlertDFont.Builder(context).setMessage("Intente Nuevamente").show();
+                }else{
+                    new AlertDFont.Builder(context).setMessage("Debe de generar por lo menos un informe con foto de camara antes de tener esta opcion").show();
+                }
+            }
+        }
+    }
+    private void EnviarCorreo(String ws_PDFEmail, String ws_PDFName, String ws_PDFBase64,
+                              String ws_PDFNomenclatura,
+                              String ws_PDFNombre,
+                              String ws_PDFSolicitante,
+                              String ws_PDFEnviada,
+                              String ws_PDFAsunto,
+                              String ws_PDFEstado,
+                              String ws_PDFUbicacion,
+                              String ws_PDFNotas){
+        final ProgressDialog builder = new ProgressDialog(UpdateCircular.this);
+        builder.setMessage("Verificando envio de Correo...");
+        builder.setCancelable(false);
+        builder.show();
+        HashMap<String, String>map = new HashMap<>();
+        map.put("ws_PDFEmail", ws_PDFEmail);
+        map.put("ws_PDFName", ws_PDFName);
+        map.put("ws_PDFBase64", ws_PDFBase64);
+        map.put("ws_PDFNomenclatura", ws_PDFNomenclatura);
+        map.put("ws_PDFNombre", ws_PDFNombre);
+        map.put("ws_PDFSolicitante", ws_PDFSolicitante);
+        map.put("ws_PDFEnviada", ws_PDFEnviada);
+        map.put("ws_PDFAsunto", ws_PDFAsunto);
+        map.put("ws_PDFEstado", ws_PDFEstado);
+        map.put("ws_PDFUbicacion", ws_PDFUbicacion);
+        map.put("ws_PDFNotas", ws_PDFNotas);
+        JSONObject object = new JSONObject(map);
+        JsonObjectRequest Req = new JsonObjectRequest(
+                Request.Method.POST,
+                WS_SendEmail,
+                object,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            builder.dismiss();
+                            Log.e("WS-Response", response.toString());
+                            if (response.getString("Response").equals("Success")) {
+                                new AlertDFont.Builder(UpdateCircular.this)
+                                        .setMessage("Correo Enviado")
+                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                                Intent returnIntent = new Intent();
+                                                setResult(Activity.RESULT_OK, returnIntent);
+                                                UpdateCircular.this.finish();
+                                                
+                                            }
+                                        })
+                                        .show();
+                            } else {
+                                // TODO: Guardar localmente
+                                new AlertDFont.Builder(UpdateCircular.this)
+                                        .setMessage("Su solicitud no se ha podido realizar con exito.")
+                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        })
+                                        .show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        builder.dismiss();
+                        Log.e("TAG", "Error Volley: " + error.getCause());
+                        new AlertDFont.Builder(UpdateCircular.this).setMessage(error.getCause().toString()).show();
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                headers.put("Accept", "application/json");
+                return headers;
+            }
+        };
+        Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        VolleySingleton.getInstance().addToRequestQueue(Req);
+    }
+    
+    private void getgallery(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Seleccióna la imagen"), getgallery);
+    }
+    private void getgallery_entregado(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Seleccióna la imagen"), getgallery_entregado);
+    }
 }

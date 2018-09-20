@@ -25,7 +25,7 @@ public class Constant {
     
     
     //TODO: RETRIEVE INICIAL INFORMATION
-//    public static String IP_Address = "192.168.1.66";
+//    public static String IP_Address = "192.168.1.67";
     public static String IP_Address = "www.gsirem.com:8888";
     public static String URL_Address = "http://"+IP_Address+"/OficioAssist/";
     public static String Url_Add = "www.gsirem.com:8888/OficioAssist/";
@@ -71,12 +71,14 @@ public class Constant {
     public static String WS_SelectDepsAsignado="http://"+IP_Address+"/OficioAssist/SelectDepsAsignado.php";
     
     //TODO: ACTIVITY RESULT CODES
-    public static Integer UpdateOficio_CODE=001;
-    public static Integer AddUser_CODE=002;
-    public static Integer Camera_CODE=003;
-    public static Integer Camera_CODE_Entregado=004;
-    public static Integer UserUpdated_CODE=005;
-    public static Integer NewDepartment=006;
+    public static Integer UpdateOficio_CODE=1;
+    public static Integer AddUser_CODE=2;
+    public static Integer Camera_CODE=3;
+    public static Integer Camera_CODE_Entregado=4;
+    public static Integer UserUpdated_CODE=5;
+    public static Integer NewDepartment=6;
+    public static Integer getgallery =7;
+    public static Integer getgallery_entregado= 8;
     
     //TODO: GENERAL VARIABLES
     public static String Active = "activo",Rol = "fk_id_rol";

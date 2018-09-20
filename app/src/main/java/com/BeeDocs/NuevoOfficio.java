@@ -33,42 +33,33 @@ import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.tool.xml.XMLWorkerHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.BeeDocs.Constant.SPApellidoM_persona;
-import static com.BeeDocs.Constant.SPApellidoP_persona;
-import static com.BeeDocs.Constant.SPNombre_persona;
+import static com.BeeDocs.Constant.getgallery;
 import static com.BeeDocs.Constant.WS_SubirOficio;
+import static com.BeeDocs.Constant.getgallery_entregado;
 import static com.BeeDocs.SharedPreference.GETSharedPreferences;
 
 public class NuevoOfficio extends AppCompatActivity {
@@ -116,7 +107,24 @@ public class NuevoOfficio extends AppCompatActivity {
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
                 if (mCurrentPhotoBase64Pendiente.equals("")) {
-                    getcamara();
+                    new AlertDFont.Builder(NuevoOfficio.this)
+                            .setMessage("La imagen se tomara de: ")
+                            .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) { getcamara(); }})
+                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNeutralButton("Galery", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getgallery();
+                                    
+                                }
+                            }).show();
                 } else {
                     final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(NuevoOfficio.this);
                     alerBuilder1.setMessage("Desea recapturar la imagen?")
@@ -125,7 +133,27 @@ public class NuevoOfficio extends AppCompatActivity {
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    getcamara();
+                                    new AlertDFont.Builder(NuevoOfficio.this)
+                                            .setMessage("La imagen se tomara de: ")
+                                            .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getcamara();
+                                                }
+                                            })
+                                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            })
+                                            .setNeutralButton("Galery", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getgallery();
+                    
+                                                }
+                                            }).show();
                                 }
                             })
                             .setNegativeButton(android.R.string.cancel, null).show();
@@ -189,7 +217,26 @@ public class NuevoOfficio extends AppCompatActivity {
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
                 if (mCurrentPhotoBase64Entregada.equals("")) {
-                    getcamaraEntregada();
+                    new AlertDFont.Builder(NuevoOfficio.this)
+                            .setMessage("La imagen se tomara de: ")
+                            .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getcamaraEntregada();
+                                }
+                            })
+                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNeutralButton("Galery", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getgallery_entregado();
+                                }
+                            }).show();
                 } else {
                     final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(NuevoOfficio.this);
                     alerBuilder1.setMessage("Desea recapturar la imagen?")
@@ -198,11 +245,29 @@ public class NuevoOfficio extends AppCompatActivity {
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    getcamaraEntregada();
+                                    new AlertDFont.Builder(NuevoOfficio.this)
+                                            .setMessage("La imagen se tomara de: ")
+                                            .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getcamaraEntregada();
+                                                }
+                                            })
+                                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            })
+                                            .setNeutralButton("Galery", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getgallery_entregado();
+                                                }
+                                            }).show();
                                 }
                             })
                             .setNegativeButton(android.R.string.cancel, null).show();
-                    alerBuilder1.create();
                 }
             }
         });
@@ -440,6 +505,36 @@ public class NuevoOfficio extends AppCompatActivity {
         if (requestCode == Constant.Camera_CODE_Entregado && resultCode == RESULT_OK) {
             setPicEntregada();
         }
+        if (requestCode == Constant.getgallery && resultCode == RESULT_OK){
+            try {
+                @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                InputStream inputStream = NuevoOfficio.this.getContentResolver().openInputStream(data.getData());
+                String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
+                Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream));
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                mCurrentPhotoBase64Pendiente = Base64.encodeToString(os.toByteArray(), Base64.DEFAULT);
+                mCurrentPhotoNamePendiente = imageFileName + ".jpg";
+                NOfficio_RutaPendiente.setText(mCurrentPhotoNamePendiente);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        if (requestCode == getgallery_entregado && resultCode == RESULT_OK){
+            try {
+                @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                InputStream inputStream = NuevoOfficio.this.getContentResolver().openInputStream(data.getData());
+                String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
+                Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream));
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                mCurrentPhotoBase64Entregada = Base64.encodeToString(os.toByteArray(), Base64.DEFAULT);
+                mCurrentPhotoNameEntregada = imageFileName + ".jpg";
+                NOfficio_RutaEntregada.setText(mCurrentPhotoNameEntregada);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
     
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CAMARA PERMISSION
@@ -465,8 +560,7 @@ public class NuevoOfficio extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 if (photoFile != null) {
-                    Uri photoURI = FileProvider.getUriForFile
-                            (getApplicationContext(), "com.BeeDocs.android.fileprovider", photoFile);
+                    Uri photoURI = FileProvider.getUriForFile(getApplicationContext(), "com.BeeDocs.android.fileprovider", photoFile);
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                         takePictureIntent.setClipData(ClipData.newRawUri("", photoURI));
@@ -611,5 +705,18 @@ public class NuevoOfficio extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    private void getgallery(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Seleccióna la imagen"), getgallery);
+    }
+    private void getgallery_entregado(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Seleccióna la imagen"), getgallery_entregado);
     }
 }

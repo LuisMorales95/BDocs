@@ -42,10 +42,13 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -56,6 +59,8 @@ import java.util.Objects;
 import com.BeeDocs.R;
 
 import static com.BeeDocs.Constant.WS_SubirCircular;
+import static com.BeeDocs.Constant.getgallery;
+import static com.BeeDocs.Constant.getgallery_entregado;
 import static com.BeeDocs.SharedPreference.GETSharedPreferences;
 
 public class NuevoCircularTrabajador extends AppCompatActivity {
@@ -103,14 +108,33 @@ public class NuevoCircularTrabajador extends AppCompatActivity {
         NOfficio_Pendiente = (Button) findViewById(R.id.NOfficio_Pendiente);
         NOfficio_Pendiente.setText("Circular");
         NOfficio_Entregada = (Button) findViewById(R.id.NOfficio_Entregada);
-        
+    
         NOfficio_Pendiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
                 if (mCurrentPhotoBase64Pendiente.equals("")) {
-                    getcamara();
+                    new AlertDFont.Builder(NuevoCircularTrabajador.this)
+                            .setMessage("La imagen se tomara de: ")
+                            .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getcamara();
+                                }
+                            })
+                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNeutralButton("Galery", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getgallery();
+                                }
+                            }).show();
                 } else {
                     final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(NuevoCircularTrabajador.this);
                     alerBuilder1.setMessage("Desea recapturar la imagen?")
@@ -119,7 +143,26 @@ public class NuevoCircularTrabajador extends AppCompatActivity {
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    getcamara();
+                                    new AlertDFont.Builder(NuevoCircularTrabajador.this)
+                                            .setMessage("La imagen se tomara de: ")
+                                            .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getcamara();
+                                                }
+                                            })
+                                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            })
+                                            .setNeutralButton("Galery", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getgallery();
+                                                }
+                                            }).show();
                                 }
                             })
                             .setNegativeButton(android.R.string.cancel, null).show();
@@ -133,7 +176,26 @@ public class NuevoCircularTrabajador extends AppCompatActivity {
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
                 if (mCurrentPhotoBase64Entregada.equals("")) {
-                    getcamaraEntregada();
+                    new AlertDFont.Builder(NuevoCircularTrabajador.this)
+                            .setMessage("La imagen se tomara de: ")
+                            .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getcamaraEntregada();
+                                }
+                            })
+                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNeutralButton("Galery", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getgallery_entregado();
+                                }
+                            }).show();
                 } else {
                     final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(NuevoCircularTrabajador.this);
                     alerBuilder1.setMessage("Desea recapturar la imagen?")
@@ -142,11 +204,29 @@ public class NuevoCircularTrabajador extends AppCompatActivity {
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    getcamaraEntregada();
+                                    new AlertDFont.Builder(NuevoCircularTrabajador.this)
+                                            .setMessage("La imagen se tomara de: ")
+                                            .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getcamaraEntregada();
+                                                }
+                                            })
+                                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            })
+                                            .setNeutralButton("Galery", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getgallery_entregado();
+                                                }
+                                            }).show();
                                 }
                             })
                             .setNegativeButton(android.R.string.cancel, null).show();
-                    alerBuilder1.create();
                 }
             }
         });
@@ -391,10 +471,38 @@ public class NuevoCircularTrabajador extends AppCompatActivity {
         if (requestCode==Constant.Camera_CODE_Entregado && resultCode==RESULT_OK){
             setPicEntregada();
         }
+        if (requestCode == Constant.getgallery && resultCode == RESULT_OK){
+            try {
+                @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                InputStream inputStream = NuevoCircularTrabajador.this.getContentResolver().openInputStream(data.getData());
+                String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
+                Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream));
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                mCurrentPhotoBase64Pendiente = Base64.encodeToString(os.toByteArray(), Base64.DEFAULT);
+                mCurrentPhotoNamePendiente = imageFileName + ".jpg";
+                NOfficio_RutaPendiente.setText(mCurrentPhotoNamePendiente);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        if (requestCode == getgallery_entregado && resultCode == RESULT_OK){
+            try {
+                @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                InputStream inputStream = NuevoCircularTrabajador.this.getContentResolver().openInputStream(data.getData());
+                String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
+                Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream));
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                mCurrentPhotoBase64Entregada = Base64.encodeToString(os.toByteArray(), Base64.DEFAULT);
+                mCurrentPhotoNameEntregada = imageFileName + ".jpg";
+                NOfficio_RutaEntregada.setText(mCurrentPhotoNameEntregada);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
-    
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                              CAMARA PERMISSION
-    
     private void getcamara() {
         if (ContextCompat.checkSelfPermission(NuevoCircularTrabajador.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(NuevoCircularTrabajador.this, new String[]{
@@ -480,15 +588,7 @@ public class NuevoCircularTrabajador extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-    
-    
-    
-    
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                              CAMARA PERMISSION ENTREGADO
-    
-    
-    
-    
     private void getcamaraEntregada() {
         if (ContextCompat.checkSelfPermission(NuevoCircularTrabajador.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(NuevoCircularTrabajador.this, new String[]{
@@ -575,9 +675,16 @@ public class NuevoCircularTrabajador extends AppCompatActivity {
         }
     }
     
-    
-    
-    
-    
-    
+    private void getgallery(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Seleccióna la imagen"), getgallery);
+    }
+    private void getgallery_entregado(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Seleccióna la imagen"), getgallery_entregado);
+    }
 }
