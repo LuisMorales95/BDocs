@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="?attr/actionBarSize"
-    tools:context="com.novanesttech.beedocs.activity.UsersActivation">
+    tools:context="com.beedocs.activity.UsersActivation">
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"

@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name="com.novanesttech.beedocs.BeeDocsApplication"
+        android:name="com.beedocs.BeeDocsApplication"
         android:allowBackup="true"
         android:focusableInTouchMode="true"
         android:hardwareAccelerated="false"
@@ -27,43 +27,43 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.novanesttech.beedocs.activity.MainActivity"
+            android:name="com.beedocs.activity.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.NuevoOfficio"
+            android:name="com.beedocs.activity.NuevoOfficio"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.NuevoMemoran"
+            android:name="com.beedocs.activity.NuevoMemoran"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.NuevoCircular"
+            android:name="com.beedocs.activity.NuevoCircular"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.NuevoOficioTrabajador"
+            android:name="com.beedocs.activity.NuevoOficioTrabajador"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.NuevoMemoranTrabajador"
+            android:name="com.beedocs.activity.NuevoMemoranTrabajador"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.NuevoCircularTrabajador"
+            android:name="com.beedocs.activity.NuevoCircularTrabajador"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.SignIn"
+            android:name="com.beedocs.activity.SignIn"
             android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
@@ -73,37 +73,37 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.novanesttech.beedocs.activity.Register"
+            android:name="com.beedocs.activity.Register"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.UpdateUser"
+            android:name="com.beedocs.activity.UpdateUser"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.UpdateOfficio"
+            android:name="com.beedocs.activity.UpdateOfficio"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.UpdateMemoran"
+            android:name="com.beedocs.activity.UpdateMemoran"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.UpdateCircular"
+            android:name="com.beedocs.activity.UpdateCircular"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.UsersActivation"
+            android:name="com.beedocs.activity.UsersActivation"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.novanesttech.beedocs.activity.Asign_Departamentos"
+            android:name="com.beedocs.activity.Asign_Departamentos"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
@@ -118,7 +118,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name="com.novanesttech.beedocs.activity.NuevoDepartamento"
+        <activity android:name="com.beedocs.activity.NuevoDepartamento"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden"/>

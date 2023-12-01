@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="com.novanesttech.beedocs.fragment.Officios">
+    tools:context="com.beedocs.fragment.Officios">
 
     <!-- TODO: Update blank fragment layout -->
 
