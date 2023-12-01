@@ -16,10 +16,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +34,7 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.BeeDocs.dialog.AlertDFont;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -499,13 +500,14 @@ public class NuevoOfficio extends AppCompatActivity {
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constant.Camera_CODE && resultCode == RESULT_OK) {
             setPic();
         }
         if (requestCode == Constant.Camera_CODE_Entregado && resultCode == RESULT_OK) {
             setPicEntregada();
         }
-        if (requestCode == Constant.getgallery && resultCode == RESULT_OK){
+        if (requestCode == getgallery && resultCode == RESULT_OK) {
             try {
                 @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                 InputStream inputStream = NuevoOfficio.this.getContentResolver().openInputStream(data.getData());
@@ -520,7 +522,7 @@ public class NuevoOfficio extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        if (requestCode == getgallery_entregado && resultCode == RESULT_OK){
+        if (requestCode == getgallery_entregado && resultCode == RESULT_OK) {
             try {
                 @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                 InputStream inputStream = NuevoOfficio.this.getContentResolver().openInputStream(data.getData());
