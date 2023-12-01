@@ -1,12 +1,13 @@
-apply plugin: 'com.android.application'
-
+plugins {
+    id 'kotlin-android'
+    id 'com.android.application'
+}
 android {
-    compileSdkVersion 34
+    compileSdk 33
     defaultConfig {
         applicationId "com.beedocs"
         minSdkVersion 19
-        //noinspection EditedTargetSdkVersion
-        targetSdkVersion 34
+        targetSdkVersion 33
         versionCode 8
         versionName "1.0.8"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -21,17 +22,25 @@ android {
         }
     }
     namespace 'com.BeeDocs'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
-repositories {
-    mavenCentral()
-    google()
-}
+
 dependencies {
+    implementation project(':data')
+    implementation project(':domain')
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation files('libs/itext5-itextpdf-5.5.12.jar')
     implementation files('libs/itext5-xmlworker-5.5.12.jar')
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.10.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.21"
+    implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.13.2'
@@ -39,9 +48,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.mcxiaoke.volley:library:1.0.19'
-    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     implementation 'commons-io:commons-io:2.6'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     implementation "androidx.multidex:multidex:2.0.1"
 
 }

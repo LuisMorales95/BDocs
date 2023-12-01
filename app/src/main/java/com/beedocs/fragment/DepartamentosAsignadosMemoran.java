@@ -154,7 +154,7 @@ public class DepartamentosAsignadosMemoran extends Fragment {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     public void DepartamentoAll() {
         ProgressDialog.Builder builder = new ProgressDialog.Builder(getActivity());
@@ -223,7 +223,7 @@ public class DepartamentosAsignadosMemoran extends Fragment {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     
     
@@ -236,7 +236,7 @@ public class DepartamentosAsignadosMemoran extends Fragment {
     
     
     public class CustomAdapter extends BaseAdapter {
-        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<DepartamentoAsignado> departamentoAsignadoList;

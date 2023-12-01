@@ -21,8 +21,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.BeeDocs.R;
-import com.beedocs.model.Info_Personas;
 import com.beedocs.BeeDocsApplication;
+import com.beedocs.model.Info_Personas;
 import com.beedocs.dialog.AlertDFont;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -41,8 +41,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-public class Asign_Departamentos extends AppCompatActivity {
+public class AssignDepartment extends AppCompatActivity {
     ArrayAdapter<String> adapterdepartamentos;
     
     static Info_Personas Persona;
@@ -65,7 +66,7 @@ public class Asign_Departamentos extends AppCompatActivity {
     }
     
     public void Desps_Asignados(final String id_Persona, final String[] id_departamentosTodos, final String[] departamentosTodos) {
-        ProgressDialog.Builder builder = new ProgressDialog.Builder(Asign_Departamentos.this);
+        ProgressDialog.Builder builder = new ProgressDialog.Builder(AssignDepartment.this);
         builder.setMessage("Analizando Informacion...");
         builder.setCancelable(false);
         final android.app.AlertDialog alertDialog = builder.create();
@@ -123,7 +124,7 @@ public class Asign_Departamentos extends AppCompatActivity {
                             Iddeps[i]=deps.get(i).getIddeps();
                             Nomdeps[i]=deps.get(i).getNomdeps();
                         }
-                        adapterdepartamentos = new ArrayAdapter<String>(Asign_Departamentos.this, R.layout.spinner_item, Nomdeps);
+                        adapterdepartamentos = new ArrayAdapter<String>(AssignDepartment.this, R.layout.spinner_item, Nomdeps);
                         AsignDep_Departamentos.setAdapter(adapterdepartamentos);
                         AsignDep_Departamentos.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
@@ -140,7 +141,7 @@ public class Asign_Departamentos extends AppCompatActivity {
 
                             }
                         });
-                        customListDepartamentos = new CustomListDepartamentos(Asign_Departamentos.this,depsasignados);
+                        customListDepartamentos = new CustomListDepartamentos(AssignDepartment.this,depsasignados);
                         AsignDep_Listas.setAdapter(customListDepartamentos);
                         AsignDep_Listas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
@@ -156,7 +157,7 @@ public class Asign_Departamentos extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         alertDialog.dismiss();
                         Log.d("TAG", "Error Volley: " + error.getCause());
-                        new AlertDFont.Builder(Asign_Departamentos.this).setMessage(error.getCause().toString()).show();
+                        new AlertDFont.Builder(AssignDepartment.this).setMessage(error.getCause().toString()).show();
                     }
                 }
         ) {
@@ -169,7 +170,7 @@ public class Asign_Departamentos extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        Objects.requireNonNull(BeeDocsApplication.Companion.getInstance()).getVolleyConnection().addToRequestQueue(Req);
     }
     public class departam{
         String iddeps,nomdeps;
@@ -236,7 +237,7 @@ public class Asign_Departamentos extends AppCompatActivity {
     }
     
     public void insertDepartamento(String id_persona, String id_departamento){
-        ProgressDialog.Builder builder = new ProgressDialog.Builder(Asign_Departamentos.this);
+        ProgressDialog.Builder builder = new ProgressDialog.Builder(AssignDepartment.this);
         builder.setMessage("Asignando Departamento...");
         builder.setCancelable(false);
         final android.app.AlertDialog alertDialog = builder.create();
@@ -258,7 +259,7 @@ public class Asign_Departamentos extends AppCompatActivity {
                             alertDialog.dismiss();
                             Log.e("WS-Response",response.toString());
                             if (response.getString("Response").equals("Success")){
-                                new AlertDFont.Builder(Asign_Departamentos.this)
+                                new AlertDFont.Builder(AssignDepartment.this)
                                         .setMessage("Informacion Guardada")
                                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                     @Override
@@ -269,7 +270,7 @@ public class Asign_Departamentos extends AppCompatActivity {
                                 }).show();
                             }else{
                                 // TODO: Guardar localmente
-                                new AlertDFont.Builder(Asign_Departamentos.this)
+                                new AlertDFont.Builder(AssignDepartment.this)
                                         .setMessage("Su solicitud no se ha podido realizar con exito.")
                                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                     @Override
@@ -288,7 +289,7 @@ public class Asign_Departamentos extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         alertDialog.dismiss();
                         Log.d("TAG", "Error Volley: " + error.getCause());
-                        new AlertDFont.Builder(Asign_Departamentos.this).setMessage(error.getCause().toString()).show();
+                        new AlertDFont.Builder(AssignDepartment.this).setMessage(error.getCause().toString()).show();
                     }
                 }
         ) {
@@ -301,7 +302,7 @@ public class Asign_Departamentos extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        Objects.requireNonNull(BeeDocsApplication.Companion.getInstance()).getVolleyConnection().addToRequestQueue(Req);
     }
     public void reload(){
         if (Build.VERSION.SDK_INT >= 11) {
@@ -320,7 +321,7 @@ public class Asign_Departamentos extends AppCompatActivity {
     
     public class CustomListDepartamentos extends BaseAdapter{
     
-        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<departam> departamentoAsignados;
@@ -361,7 +362,7 @@ public class Asign_Departamentos extends AppCompatActivity {
     }
     
     public void delete_AsignaDepartamento(String id_persona,String id_departamento){
-        ProgressDialog.Builder builder = new ProgressDialog.Builder(Asign_Departamentos.this);
+        ProgressDialog.Builder builder = new ProgressDialog.Builder(AssignDepartment.this);
         builder.setMessage("Borrando Departamento Asignado...");
         builder.setCancelable(false);
         final android.app.AlertDialog alertDialog = builder.create();
@@ -383,7 +384,7 @@ public class Asign_Departamentos extends AppCompatActivity {
                             alertDialog.dismiss();
                             Log.e("WS-Response",response.toString());
                             if (response.getString("Response").equals("Success")){
-                                new AlertDFont.Builder(Asign_Departamentos.this)
+                                new AlertDFont.Builder(AssignDepartment.this)
                                         .setMessage("Informacion Guardada")
                                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                             @Override
@@ -394,7 +395,7 @@ public class Asign_Departamentos extends AppCompatActivity {
                                         }).show();
                             }else{
                                 // TODO: Guardar localmente
-                                new AlertDFont.Builder(Asign_Departamentos.this)
+                                new AlertDFont.Builder(AssignDepartment.this)
                                         .setMessage("Su solicitud no se ha podido realizar con exito.")
                                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                             @Override
@@ -413,7 +414,7 @@ public class Asign_Departamentos extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         alertDialog.dismiss();
                         Log.d("TAG", "Error Volley: " + error.getCause());
-                        new AlertDFont.Builder(Asign_Departamentos.this).setMessage(error.getCause().toString()).show();
+                        new AlertDFont.Builder(AssignDepartment.this).setMessage(error.getCause().toString()).show();
                     }
                 }
         ) {
@@ -426,7 +427,7 @@ public class Asign_Departamentos extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        Objects.requireNonNull(BeeDocsApplication.Companion.getInstance()).getVolleyConnection().addToRequestQueue(Req);
     }
     
 }

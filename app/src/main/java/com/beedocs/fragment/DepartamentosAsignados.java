@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.beedocs.utils.Constant.WS_SelectAllDepartamentos;
 import static com.beedocs.utils.Constant.WS_SelectDepsAsignado;
@@ -233,7 +234,7 @@ public class DepartamentosAsignados extends Fragment {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        Objects.requireNonNull(BeeDocsApplication.Companion.getInstance()).getVolleyConnection().addToRequestQueue(Req);
     }
     
     // TODO: Rename method, update argument and hook method into UI event
@@ -266,7 +267,7 @@ public class DepartamentosAsignados extends Fragment {
     }
     
     public class CustomAdapter extends BaseAdapter {
-        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().getImageLoader();
+        ImageLoader imageLoader = Objects.requireNonNull(BeeDocsApplication.Companion.getInstance()).getVolleyConnection().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<DepartamentoAsignado> departamentoAsignadoList;

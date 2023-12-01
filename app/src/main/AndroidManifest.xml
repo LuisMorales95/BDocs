@@ -103,8 +103,8 @@
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.beedocs.activity.Asign_Departamentos"
-            android:screenOrientation="portrait"
+            android:name="com.beedocs.activity.AssignDepartment"
+            android:screenOrientation="fullSensor"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
 

@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 import static com.beedocs.utils.Constant.SPRol;
@@ -182,7 +183,7 @@ public class Memoran extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        Objects.requireNonNull(BeeDocsApplication.Companion.getInstance()).getVolleyConnection().addToRequestQueue(Req);
     }
     private void SelectEstados() {
         JsonArrayRequest Req = new JsonArrayRequest(
@@ -244,7 +245,7 @@ public class Memoran extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     
     public void OneUser_ListaOficios(String id_persona) {
@@ -382,7 +383,7 @@ public class Memoran extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     
     public void OneUser_ListaOficiosAll() {
@@ -522,7 +523,7 @@ public class Memoran extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     
     public void BorrarMemoran(String id_Memoran) {
@@ -585,7 +586,7 @@ public class Memoran extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     
     @Override
@@ -629,7 +630,7 @@ public class Memoran extends Fragment {
     }
     
     public class CustomListAdapter extends BaseAdapter {
-        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<ModelMemoran> lista;

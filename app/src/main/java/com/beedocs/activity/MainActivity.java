@@ -39,6 +39,7 @@ import org.json.JSONException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.beedocs.utils.Constant.SPNomenclaturaCircular;
 import static com.beedocs.utils.Constant.SPNomenclaturaMemoran;
@@ -199,7 +200,7 @@ public class MainActivity extends AppCompatActivity
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        Objects.requireNonNull(BeeDocsApplication.Companion.getInstance()).getVolleyConnection().addToRequestQueue(Req);
     }
     
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener

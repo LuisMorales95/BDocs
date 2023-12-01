@@ -629,7 +629,7 @@ public class UpdateOfficio extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     
     
@@ -1073,7 +1073,7 @@ public class UpdateOfficio extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     
     private void getgallery(){

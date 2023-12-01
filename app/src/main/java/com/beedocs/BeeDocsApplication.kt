@@ -9,16 +9,18 @@ class BeeDocsApplication : Application() {
 	
 	val TAG = this.javaClass.simpleName
 	
-	private lateinit var volleyConnection: VolleyConnection
+	private var volleyConnection: VolleyConnection? = null
 	
 	override fun onCreate() {
 		super.onCreate()
 		instance = this
-		volleyConnection = VolleyConnection(getContext())
 	}
 	
 	fun getVolleyConnection() : VolleyConnection {
-		return volleyConnection
+		if (volleyConnection == null) {
+			volleyConnection = VolleyConnection(getContext())
+		}
+		return volleyConnection as VolleyConnection
 	}
 	
 	companion object {

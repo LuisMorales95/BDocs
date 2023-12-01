@@ -109,8 +109,8 @@ public class UsersActivation extends AppCompatActivity {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                 if (!Info_Personas.get(position).getFk_id_rol().equals("3")) {
-                                    Asign_Departamentos.Persona = Info_Personas.get(position);
-                                    startActivity(new Intent(UsersActivation.this, Asign_Departamentos.class));
+                                    AssignDepartment.Persona = Info_Personas.get(position);
+                                    startActivity(new Intent(UsersActivation.this, AssignDepartment.class));
                                 }
                             }
                         });
@@ -142,7 +142,7 @@ public class UsersActivation extends AppCompatActivity {
 
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
 
     public void AccountInfo(String Id_persona) {
@@ -201,11 +201,11 @@ public class UsersActivation extends AppCompatActivity {
 
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
 
     public class CustomListAdapter extends BaseAdapter {
-        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<Info_Personas> lista;
@@ -366,7 +366,7 @@ public class UsersActivation extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
 
     @Override
