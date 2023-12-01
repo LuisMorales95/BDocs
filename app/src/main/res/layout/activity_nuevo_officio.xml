@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="com.BeeDocs.activity.NuevoOfficio">
+    tools:context="com.novanesttech.beedocs.activity.NuevoOfficio">
 
     <ScrollView
         android:layout_width="match_parent"
