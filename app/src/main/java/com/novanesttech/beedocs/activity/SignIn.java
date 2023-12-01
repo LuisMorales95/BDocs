@@ -29,6 +29,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.novanesttech.beedocs.utils.SharedPreference.GETSharedPreferences;
 import static com.novanesttech.beedocs.utils.SharedPreference.SETSharedPreferences;
@@ -163,7 +164,7 @@ public class SignIn extends AppCompatActivity {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req, tag_json_obj);
+        Objects.requireNonNull(BeeDocsApplication.Companion.getInstance()).getVolleyConnection().addToRequestQueue(Req, tag_json_obj);
     }
     
     

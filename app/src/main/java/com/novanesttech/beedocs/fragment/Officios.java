@@ -175,7 +175,7 @@ public class Officios extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     private void SelectEstados() {
         JsonArrayRequest Req = new JsonArrayRequest(
@@ -237,7 +237,7 @@ public class Officios extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     
     public void OneUser_ListaOficios(String id_persona) {
@@ -375,7 +375,7 @@ public class Officios extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     public void OneUser_ListaOficiosAll() {
         HashMap<String, String> map = new HashMap<>();
@@ -514,7 +514,7 @@ public class Officios extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     
     public void BorrarOficio(String id_Oficio) {
@@ -578,7 +578,7 @@ public class Officios extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     
     @Override
@@ -622,7 +622,7 @@ public class Officios extends Fragment {
     }
     
     public class CustomListAdapter extends BaseAdapter {
-        ImageLoader imageLoader = BeeDocsApplication.getInstance().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<ModelOficio> lista;

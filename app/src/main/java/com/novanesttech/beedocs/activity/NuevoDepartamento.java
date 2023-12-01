@@ -123,7 +123,7 @@ public class NuevoDepartamento extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
     }
     private void RegisterOficio(String Clave_departamento,
                                 String Nombre_departamento,
@@ -205,14 +205,14 @@ public class NuevoDepartamento extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
     }
     
     
     
     
     public class CustomAdapter extends BaseAdapter {
-        ImageLoader imageLoader = BeeDocsApplication.getInstance().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<DepartamentoAsignado> departamentoAsignadoList;

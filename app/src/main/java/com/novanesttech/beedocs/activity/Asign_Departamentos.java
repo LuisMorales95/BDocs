@@ -169,7 +169,7 @@ public class Asign_Departamentos extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
     }
     public class departam{
         String iddeps,nomdeps;
@@ -301,7 +301,7 @@ public class Asign_Departamentos extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
     }
     public void reload(){
         if (Build.VERSION.SDK_INT >= 11) {
@@ -320,7 +320,7 @@ public class Asign_Departamentos extends AppCompatActivity {
     
     public class CustomListDepartamentos extends BaseAdapter{
     
-        ImageLoader imageLoader = BeeDocsApplication.getInstance().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<departam> departamentoAsignados;
@@ -426,7 +426,7 @@ public class Asign_Departamentos extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
     }
     
 }

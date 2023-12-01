@@ -19,8 +19,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.BeeDocs.R;
-import com.novanesttech.beedocs.utils.SharedPreference;
 import com.novanesttech.beedocs.BeeDocsApplication;
+import com.novanesttech.beedocs.utils.SharedPreference;
 import com.novanesttech.beedocs.dialog.AlertDFont;
 import com.novanesttech.beedocs.model.DepartamentoAsignado;
 import com.novanesttech.beedocs.utils.Constant;
@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.novanesttech.beedocs.utils.Constant.WS_SelectAllDepartamentos;
 import static com.novanesttech.beedocs.utils.Constant.WS_SelectDepsAsignado;
@@ -132,7 +133,7 @@ public class DepartamentosAsignadosCircular extends Fragment {
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Circular, departamentoAsignadosList.get(position).getId_departamento());
                                     SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaCircular, departamentoAsignadosList.get(position).getNcla_departamento());
                                     Circular nextFrag= new Circular();
-                                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.MainFragmentContainer, nextFrag)
+                                    requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.MainFragmentContainer, nextFrag)
                                             .addToBackStack(null).commit();                                }
                             });
                         } catch (JSONException e) {
@@ -158,7 +159,7 @@ public class DepartamentosAsignadosCircular extends Fragment {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     
     public void DepartamentoAll() {
@@ -229,14 +230,14 @@ public class DepartamentosAsignadosCircular extends Fragment {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().addToRequestQueue(Req);
     }
     
     
     
     
     public class CustomAdapter extends BaseAdapter {
-        ImageLoader imageLoader = BeeDocsApplication.getInstance().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<DepartamentoAsignado> departamentoAsignadoList;
@@ -297,10 +298,6 @@ public class DepartamentosAsignadosCircular extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }
 

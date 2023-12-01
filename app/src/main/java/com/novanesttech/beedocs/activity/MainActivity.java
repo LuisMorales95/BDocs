@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
     }
     
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener

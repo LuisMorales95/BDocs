@@ -162,7 +162,7 @@ public class DepartamentosAsignados extends Fragment {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
     }
     
     public void DepartamentoAll() {
@@ -233,7 +233,7 @@ public class DepartamentosAsignados extends Fragment {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BeeDocsApplication.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().addToRequestQueue(Req);
     }
     
     // TODO: Rename method, update argument and hook method into UI event
@@ -266,7 +266,7 @@ public class DepartamentosAsignados extends Fragment {
     }
     
     public class CustomAdapter extends BaseAdapter {
-        ImageLoader imageLoader = BeeDocsApplication.getInstance().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.Companion.getInstance().getVolleyConnection().getImageLoader().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<DepartamentoAsignado> departamentoAsignadoList;
