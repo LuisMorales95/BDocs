@@ -18,7 +18,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.beedocs.R;
+import com.BeeDocs.R;
 import com.novanesttech.beedocs.BeeDocsApplication;
 import com.novanesttech.beedocs.dialog.AlertDFont;
 import com.novanesttech.beedocs.model.DepartamentoAsignado;

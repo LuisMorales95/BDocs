@@ -1,14 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
     defaultConfig {
         applicationId "com.novanesttech.beedocs"
         minSdkVersion 19
-        targetSdkVersion 33
+        //noinspection EditedTargetSdkVersion
+        targetSdkVersion 34
         versionCode 8
         versionName "1.0.8"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -40,4 +42,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     implementation 'commons-io:commons-io:2.6'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+    implementation "androidx.multidex:multidex:2.0.1"
+
 }

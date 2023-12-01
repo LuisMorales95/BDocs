@@ -20,7 +20,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.beedocs.R;
+import com.BeeDocs.R;
 import com.novanesttech.beedocs.model.Info_Personas;
 import com.novanesttech.beedocs.BeeDocsApplication;
 import com.novanesttech.beedocs.dialog.AlertDFont;

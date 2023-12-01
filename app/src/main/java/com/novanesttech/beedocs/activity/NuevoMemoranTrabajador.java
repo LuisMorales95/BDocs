@@ -33,7 +33,7 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.beedocs.R;
+import com.BeeDocs.R;
 import com.novanesttech.beedocs.utils.SharedPreference;
 import com.novanesttech.beedocs.utils.StringUtils;
 import com.novanesttech.beedocs.BeeDocsApplication;

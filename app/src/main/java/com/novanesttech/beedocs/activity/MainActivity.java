@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
-import com.beedocs.R;
+import com.BeeDocs.R;
 import com.novanesttech.beedocs.fragment.Memoran;
 import com.novanesttech.beedocs.fragment.Officios;
 import com.novanesttech.beedocs.utils.SharedPreference;
