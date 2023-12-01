@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.model;
 
 import android.graphics.Bitmap;
 import androidx.collection.LruCache;

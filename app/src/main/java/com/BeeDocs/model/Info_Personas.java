@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.model;
 
 public class Info_Personas {
     String id_persona;

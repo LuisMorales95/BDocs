@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.db;
 
 
 import android.content.ContentValues;

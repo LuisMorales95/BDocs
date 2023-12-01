@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -18,7 +18,10 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.BeeDocs.R;
+import com.BeeDocs.BeeDocsApplication;
 import com.BeeDocs.dialog.AlertDFont;
+import com.BeeDocs.model.DepartamentoAsignado;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -36,9 +39,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.BeeDocs.Constant.WS_SelectAllDepartamentos;
-import static com.BeeDocs.Constant.WS_SubirDepartamento;
-import static com.BeeDocs.StringUtils.unaccent;
+import static com.BeeDocs.utils.Constant.WS_SelectAllDepartamentos;
+import static com.BeeDocs.utils.Constant.WS_SubirDepartamento;
+import static com.BeeDocs.utils.StringUtils.unaccent;
 
 public class NuevoDepartamento extends AppCompatActivity {
     EditText NuevoDep_Nombre, NuevoDep_Clave;
@@ -120,7 +123,7 @@ public class NuevoDepartamento extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     private void RegisterOficio(String Clave_departamento,
                                 String Nombre_departamento,
@@ -202,14 +205,14 @@ public class NuevoDepartamento extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     
     
     
     public class CustomAdapter extends BaseAdapter {
-        ImageLoader imageLoader = VolleySingleton.getInstance().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.getInstance().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<DepartamentoAsignado> departamentoAsignadoList;

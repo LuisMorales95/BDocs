@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -42,13 +42,21 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.BeeDocs.R;
+import com.BeeDocs.BeeDocsApplication;
+import com.BeeDocs.db.BaseOficios;
 import com.BeeDocs.dialog.AlertDFont;
+import com.BeeDocs.fragment.Officios;
 import com.BeeDocs.model.ModelOficio;
+import com.BeeDocs.utils.Constant;
+import com.BeeDocs.utils.StringUtils;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
@@ -76,19 +84,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.BeeDocs.Constant.SPApellidoM_persona;
-import static com.BeeDocs.Constant.SPApellidoP_persona;
-import static com.BeeDocs.Constant.SPNombre_persona;
-import static com.BeeDocs.Constant.WS_SendEmail;
-import static com.BeeDocs.Constant.WS_UpdateOficio;
-import static com.BeeDocs.Constant.getgallery;
-import static com.BeeDocs.Constant.getgallery_entregado;
-import static com.BeeDocs.Officios.baseOficios;
-import static com.BeeDocs.SharedPreference.GETSharedPreferences;
+import static com.BeeDocs.utils.Constant.SPApellidoM_persona;
+import static com.BeeDocs.utils.Constant.SPApellidoP_persona;
+import static com.BeeDocs.utils.Constant.SPNombre_persona;
+import static com.BeeDocs.utils.Constant.WS_SendEmail;
+import static com.BeeDocs.utils.Constant.WS_UpdateOficio;
+import static com.BeeDocs.utils.Constant.getgallery;
+import static com.BeeDocs.utils.Constant.getgallery_entregado;
+import static com.BeeDocs.fragment.Officios.baseOficios;
+import static com.BeeDocs.utils.SharedPreference.GETSharedPreferences;
 
 public class UpdateOfficio extends AppCompatActivity {
     
-    static ModelOficio modelOficio;
+    public static ModelOficio modelOficio;
     private static String Carpeta_App = "com.BeeDocs";
     private static String Carpeta_PDF = "PDFs";
     Button NOfficio_Pendiente, NOfficio_Entregada;
@@ -197,10 +205,10 @@ public class UpdateOfficio extends AppCompatActivity {
                     LayoutInflater factory = LayoutInflater.from(UpdateOfficio.this);
                     final View view = factory.inflate(R.layout.imagevisor, null);
                     ImageView imagevisor_image = view.findViewById(R.id.imagevisor_image);
-                    GlideApp
+                    Glide
                             .with(UpdateOfficio.this)
                             .load(Constant.URL_Address + modelOficio.getRutaOficioP())
-                            .fitCenter()
+                            .apply(RequestOptions.fitCenterTransform())
                             .into(imagevisor_image);
                     new AlertDFont.Builder(UpdateOfficio.this).setCancelable(false)
                             .setView(view)
@@ -215,10 +223,10 @@ public class UpdateOfficio extends AppCompatActivity {
                     LayoutInflater factory = LayoutInflater.from(UpdateOfficio.this);
                     final View view = factory.inflate(R.layout.imagevisor, null);
                     ImageView imagevisor_image = view.findViewById(R.id.imagevisor_image);
-                    GlideApp
+                    Glide
                             .with(UpdateOfficio.this)
                             .load(mCurrentPhotoPathPendiente)
-                            .fitCenter()
+                            .apply(RequestOptions.fitCenterTransform())
                             .into(imagevisor_image);
                     new AlertDFont.Builder(UpdateOfficio.this).setCancelable(false)
                             .setView(view)
@@ -241,10 +249,10 @@ public class UpdateOfficio extends AppCompatActivity {
                     LayoutInflater factory = LayoutInflater.from(UpdateOfficio.this);
                     final View view = factory.inflate(R.layout.imagevisor, null);
                     ImageView imagevisor_image = view.findViewById(R.id.imagevisor_image);
-                    GlideApp
+                    Glide
                             .with(UpdateOfficio.this)
                             .load(Constant.URL_Address + modelOficio.getRutaOficioR())
-                            .fitCenter()
+                            .apply(RequestOptions.fitCenterTransform())
                             .into(imagevisor_image);
                     new AlertDFont.Builder(UpdateOfficio.this).setCancelable(false)
                             .setView(view)
@@ -259,10 +267,10 @@ public class UpdateOfficio extends AppCompatActivity {
                     LayoutInflater factory = LayoutInflater.from(UpdateOfficio.this);
                     final View view = factory.inflate(R.layout.imagevisor, null);
                     ImageView imagevisor_image = view.findViewById(R.id.imagevisor_image);
-                    GlideApp
+                    Glide
                             .with(UpdateOfficio.this)
                             .load(mCurrentPhotoPathEntregada)
-                            .fitCenter()
+                            .apply(RequestOptions.fitCenterTransform())
                             .into(imagevisor_image);
                     new AlertDFont.Builder(UpdateOfficio.this).setCancelable(false)
                             .setView(view)
@@ -629,19 +637,20 @@ public class UpdateOfficio extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constant.Camera_CODE && resultCode == RESULT_OK) {
             setPic();
         }
         if (requestCode == Constant.Camera_CODE_Entregado && resultCode == RESULT_OK) {
             setPicEntregada();
         }
-        if (requestCode == Constant.getgallery && resultCode == RESULT_OK){
+        if (requestCode == getgallery && resultCode == RESULT_OK) {
             try {
                 @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                 InputStream inputStream = UpdateOfficio.this.getContentResolver().openInputStream(data.getData());
@@ -656,7 +665,7 @@ public class UpdateOfficio extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        if (requestCode == getgallery_entregado && resultCode == RESULT_OK){
+        if (requestCode == getgallery_entregado && resultCode == RESULT_OK) {
             try {
                 @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                 InputStream inputStream = UpdateOfficio.this.getContentResolver().openInputStream(data.getData());
@@ -1072,7 +1081,7 @@ public class UpdateOfficio extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     private void getgallery(){

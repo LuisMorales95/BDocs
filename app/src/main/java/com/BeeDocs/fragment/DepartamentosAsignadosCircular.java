@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.fragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,12 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.BeeDocs.R;
+import com.BeeDocs.utils.SharedPreference;
+import com.BeeDocs.BeeDocsApplication;
 import com.BeeDocs.dialog.AlertDFont;
+import com.BeeDocs.model.DepartamentoAsignado;
+import com.BeeDocs.utils.Constant;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -28,16 +34,16 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import androidx.fragment.app.Fragment;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.BeeDocs.Constant.WS_SelectAllDepartamentos;
-import static com.BeeDocs.Constant.WS_SelectDepsAsignado;
+import static com.BeeDocs.utils.Constant.WS_SelectAllDepartamentos;
+import static com.BeeDocs.utils.Constant.WS_SelectDepsAsignado;
 
-public class DepartamentosAsignadosMemoran extends Fragment {
+public class DepartamentosAsignadosCircular extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -46,9 +52,9 @@ public class DepartamentosAsignadosMemoran extends Fragment {
     private String mParam1;
     private String mParam2;
     private DepartamentosAsignados.OnFragmentInteractionListener mListener;
-    public DepartamentosAsignadosMemoran() {}
-    public static DepartamentosAsignadosMemoran newInstance(String param1, String param2) {
-        DepartamentosAsignadosMemoran fragment = new DepartamentosAsignadosMemoran();
+    public DepartamentosAsignadosCircular() {}
+    public static DepartamentosAsignadosCircular newInstance(String param1, String param2) {
+        DepartamentosAsignadosCircular fragment = new DepartamentosAsignadosCircular();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -110,7 +116,7 @@ public class DepartamentosAsignadosMemoran extends Fragment {
                                 departamentoAsignado.setId_departamento(response.getJSONObject(i).getString("id_departamento"));
                                 departamentoAsignado.setNom_departamento(response.getJSONObject(i).getString("nom_departamento"));
                                 departamentoAsignado.setCla_departamento(response.getJSONObject(i).getString("cla_departamento"));
-                                departamentoAsignado.setNcla_departamento(response.getJSONObject(i).getString("ncla_departamento").replace("OFICIO","MEMORAN"));
+                                departamentoAsignado.setNcla_departamento(response.getJSONObject(i).getString("ncla_departamento").replace("OFICIO","CIRCULAR"));
     
                                 departamentoAsignadosList.add(departamentoAsignado);
                             }
@@ -120,12 +126,12 @@ public class DepartamentosAsignadosMemoran extends Fragment {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Oficio, departamentoAsignadosList.get(position).getId_departamento());
-                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaOficio, departamentoAsignadosList.get(position).getNcla_departamento().replace("MEMORAN","OFICIO"));
+                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaOficio, departamentoAsignadosList.get(position).getNcla_departamento().replace("CIRCULAR","OFICIO"));
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Memoran, departamentoAsignadosList.get(position).getId_departamento());
-                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaMemoran, departamentoAsignadosList.get(position).getNcla_departamento());
+                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaMemoran, departamentoAsignadosList.get(position).getNcla_departamento().replace("CIRCULAR","MEMORAN"));
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Circular, departamentoAsignadosList.get(position).getId_departamento());
-                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaCircular, departamentoAsignadosList.get(position).getNcla_departamento().replace("MEMORAN","CIRCULAR"));
-                                    Memoran nextFrag= new Memoran();
+                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaCircular, departamentoAsignadosList.get(position).getNcla_departamento());
+                                    Circular nextFrag= new Circular();
                                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.MainFragmentContainer, nextFrag)
                                             .addToBackStack(null).commit();                                }
                             });
@@ -152,8 +158,9 @@ public class DepartamentosAsignadosMemoran extends Fragment {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
+    
     public void DepartamentoAll() {
         ProgressDialog.Builder builder = new ProgressDialog.Builder(getActivity());
         builder.setMessage("Buscando Departamentos...");
@@ -180,7 +187,7 @@ public class DepartamentosAsignadosMemoran extends Fragment {
                                 departamentoAsignado.setId_departamento(response.getJSONObject(i).getString("id_departamento"));
                                 departamentoAsignado.setNom_departamento(response.getJSONObject(i).getString("nom_departamento"));
                                 departamentoAsignado.setCla_departamento(response.getJSONObject(i).getString("cla_departamento"));
-                                departamentoAsignado.setNcla_departamento(response.getJSONObject(i).getString("ncla_departamento").replace("OFICIO","MEMORAN"));
+                                departamentoAsignado.setNcla_departamento(response.getJSONObject(i).getString("ncla_departamento").replace("OFICIO", "CIRCULAR"));
                                 departamentoAsignadosList.add(departamentoAsignado);
                             }
                             CustomAdapter customAdapter = new CustomAdapter(getActivity(),departamentoAsignadosList);
@@ -189,14 +196,15 @@ public class DepartamentosAsignadosMemoran extends Fragment {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Oficio, departamentoAsignadosList.get(position).getId_departamento());
-                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaOficio, departamentoAsignadosList.get(position).getNcla_departamento().replace("MEMORAN","OFICIO"));
+                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaOficio, departamentoAsignadosList.get(position).getNcla_departamento().replace("CIRCULAR","OFICIO"));
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Memoran, departamentoAsignadosList.get(position).getId_departamento());
-                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaMemoran, departamentoAsignadosList.get(position).getNcla_departamento());
+                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaMemoran, departamentoAsignadosList.get(position).getNcla_departamento().replace("CIRCULAR","MEMORAN"));
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Circular, departamentoAsignadosList.get(position).getId_departamento());
-                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaCircular, departamentoAsignadosList.get(position).getNcla_departamento().replace("MEMORAN","CIRCULAR"));
-                                    Memoran nextFrag= new Memoran();
+                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaCircular, departamentoAsignadosList.get(position).getNcla_departamento());
+                                    Circular nextFrag= new Circular();
                                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.MainFragmentContainer, nextFrag)
-                                            .addToBackStack(null).commit();                                }
+                                            .addToBackStack(null).commit();
+                                }
                             });
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -221,20 +229,14 @@ public class DepartamentosAsignadosMemoran extends Fragment {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     
     
     
-    
-    
-    
-    
-    
-    
     public class CustomAdapter extends BaseAdapter {
-        ImageLoader imageLoader = VolleySingleton.getInstance().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.getInstance().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<DepartamentoAsignado> departamentoAsignadoList;
@@ -301,4 +303,5 @@ public class DepartamentosAsignadosMemoran extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 }
+
 

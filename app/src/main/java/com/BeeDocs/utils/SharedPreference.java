@@ -1,9 +1,9 @@
-package com.BeeDocs;
+package com.BeeDocs.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import static com.BeeDocs.VolleySingleton.SuperContext;
+import static com.BeeDocs.BeeDocsApplication.SuperContext;
 
 public class SharedPreference {
 	

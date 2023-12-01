@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="com.BeeDocs.SignIn">
+    tools:context="com.BeeDocs.activity.SignIn">
 
     <ImageView
         android:id="@+id/cardback"

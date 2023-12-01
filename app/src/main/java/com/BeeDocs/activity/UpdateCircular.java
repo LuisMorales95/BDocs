@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -41,8 +41,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.BeeDocs.R;
+import com.BeeDocs.BeeDocsApplication;
+import com.BeeDocs.db.BaseOficios;
 import com.BeeDocs.dialog.AlertDFont;
-import com.BeeDocs.model.ModelMemoran;
+import com.BeeDocs.fragment.Circular;
+import com.BeeDocs.model.ModelCiruclar;
+import com.BeeDocs.utils.Constant;
+import com.BeeDocs.utils.StringUtils;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -69,7 +75,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.BeeDocs.GlideApp;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
@@ -77,28 +84,25 @@ import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 
-import static com.BeeDocs.Constant.SPApellidoM_persona;
-import static com.BeeDocs.Constant.SPApellidoP_persona;
-import static com.BeeDocs.Constant.SPNombre_persona;
-import static com.BeeDocs.Constant.WS_SendEmail;
-import static com.BeeDocs.Constant.WS_UpdateMemoran;
-import static com.BeeDocs.Constant.getgallery;
-import static com.BeeDocs.Constant.getgallery_entregado;
-import static com.BeeDocs.Officios.baseOficios;
-import static com.BeeDocs.SharedPreference.GETSharedPreferences;
+import static com.BeeDocs.utils.Constant.SPApellidoM_persona;
+import static com.BeeDocs.utils.Constant.SPApellidoP_persona;
+import static com.BeeDocs.utils.Constant.SPNombre_persona;
+import static com.BeeDocs.utils.Constant.WS_SendEmail;
+import static com.BeeDocs.utils.Constant.WS_UpdateCircular;
+import static com.BeeDocs.utils.Constant.getgallery;
+import static com.BeeDocs.utils.Constant.getgallery_entregado;
+import static com.BeeDocs.fragment.Officios.baseOficios;
+import static com.BeeDocs.utils.SharedPreference.GETSharedPreferences;
 
-public class UpdateMemoran extends AppCompatActivity {
+public class UpdateCircular extends AppCompatActivity {
     
-    static ModelMemoran modelMemoran;
+    public static ModelCiruclar modelCiruclar;
     
     static String Nomenclatura, Nombre, Dep_Envi, Asunto, Ubicacion, Notas;
     static int Dep_Sol, Estado, idOficio;
     static int es_mio = 1;
     Button
             NOfficio_Pendiente, NOfficio_Entregada;
-    
-    private static String Carpeta_App = "com.BeeDocs";
-    private static String Carpeta_PDF = "PDFs";
     EditText NOfficio_Notas;
     AutoCompleteTextView NOfficio_Nombre, NOfficio_Dep_Envi, NOfficio_Asunto, NOfficio_Ubicacion;
     Spinner NOfficio_Dep_Sol, NOfficio_Estado;
@@ -107,8 +111,10 @@ public class UpdateMemoran extends AppCompatActivity {
     private String[] personas = {"id_persona", "nom_persona"};
     private String[] dep_enviada = {"id_dep_envi", "nom_dep_envi"};
     private String[] ubicacion = {"id_ubica", "nom_ubica"};
-    private String[] departamentos = Memoran.departamentos, id_departamentos = Memoran.id_departamentos, clave_departamento = Memoran.clave_departamento;
-    private String[] estados = Memoran.estados, id_estados = Memoran.id_estados;
+    private String[] departamentos = Circular.departamentos,
+                    id_departamentos = Circular.id_departamentos,
+                    clave_departamento = Circular.clave_departamento;
+    private String[] estados = Circular.estados, id_estados = Circular.id_estados;
     
     private String mCurrentPhotoBase64Pendiente = "";
     private String mCurrentPhotoPathPendiente = "";
@@ -121,8 +127,11 @@ public class UpdateMemoran extends AppCompatActivity {
     private String mCurrentPhotoNameEntregada = "";
     private File imageEntregada = null;
     private OutputStream outputStreamEntregada = null;
+    
     ProgressDialog progressDFont;
     private ImageView NOfficio_ShareDoc;
+    private static String Carpeta_App = "com.BeeDocs";
+    private static String Carpeta_PDF = "PDFs";
     
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -130,13 +139,13 @@ public class UpdateMemoran extends AppCompatActivity {
         setContentView(R.layout.activity_nuevo_officio);
         progressDFont = new ProgressDialog(this);
         baseOficios = new BaseOficios(this);
-        ((TextView) findViewById(R.id.NOfficio_Titulo)).setText("Actualizar Memoran");
+        ((TextView) findViewById(R.id.NOfficio_Titulo)).setText("Actualizar Circular");
         NOfficio_RutaPendiente = (TextView) findViewById(R.id.NOfficio_RutaPendiente);
-        NOfficio_RutaPendiente.setText(modelMemoran.getRutaMemoranP());
+        NOfficio_RutaPendiente.setText(modelCiruclar.getRutaCircularP());
         NOfficio_RutaEntregada = (TextView) findViewById(R.id.NOfficio_RutaEntregada);
-        NOfficio_RutaEntregada.setText(modelMemoran.getRutaMemoranR());
+        NOfficio_RutaEntregada.setText(modelCiruclar.getRutaCircularR());
         NOfficio_Pendiente = (Button) findViewById(R.id.NOfficio_Pendiente);
-        NOfficio_Pendiente.setText("Memoran");
+        NOfficio_Pendiente.setText("Circular");
         NOfficio_Entregada = (Button) findViewById(R.id.NOfficio_Entregada);
         
         NOfficio_Pendiente.setOnClickListener(new View.OnClickListener() {
@@ -145,7 +154,7 @@ public class UpdateMemoran extends AppCompatActivity {
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
                 if (mCurrentPhotoBase64Pendiente.equals("")) {
-                    new AlertDFont.Builder(UpdateMemoran.this)
+                    new AlertDFont.Builder(UpdateCircular.this)
                             .setMessage("La imagen se tomara de: ")
                             .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
                                 @Override
@@ -163,14 +172,14 @@ public class UpdateMemoran extends AppCompatActivity {
                                 }
                             }).show();
                 } else {
-                    final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(UpdateMemoran.this);
+                    final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(UpdateCircular.this);
                     alerBuilder1.setMessage("Desea recapturar la imagen?")
                             .setTitle("Aviso")
                             .setCancelable(false)
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    new AlertDFont.Builder(UpdateMemoran.this)
+                                    new AlertDFont.Builder(UpdateCircular.this)
                                             .setMessage("La imagen se tomara de: ")
                                             .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
                                                 @Override
@@ -200,16 +209,16 @@ public class UpdateMemoran extends AppCompatActivity {
         NOfficio_Pendiente.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (NOfficio_RutaPendiente.getText().toString().contains("MemoranYRecibos/")) {
-                    LayoutInflater factory = LayoutInflater.from(UpdateMemoran.this);
+                if (NOfficio_RutaPendiente.getText().toString().contains("CircularYRecibos/")) {
+                    LayoutInflater factory = LayoutInflater.from(UpdateCircular.this);
                     final View view = factory.inflate(R.layout.imagevisor, null);
                     ImageView imagevisor_image = view.findViewById(R.id.imagevisor_image);
-                    GlideApp
-                            .with(UpdateMemoran.this)
-                            .load(Constant.URL_Address + modelMemoran.getRutaMemoranP())
-                            .fitCenter()
+                    Glide
+                            .with(UpdateCircular.this)
+                            .load(Constant.URL_Address + modelCiruclar.getRutaCircularP())
+                            .apply(RequestOptions.fitCenterTransform())
                             .into(imagevisor_image);
-                    new AlertDFont.Builder(UpdateMemoran.this).setCancelable(false)
+                    new AlertDFont.Builder(UpdateCircular.this).setCancelable(false)
                             .setView(view)
                             .setNegativeButton("Cancelar",
                                     new DialogInterface.OnClickListener() {
@@ -219,15 +228,15 @@ public class UpdateMemoran extends AppCompatActivity {
                                     }).show();
                     return true;
                 }else if (!NOfficio_Pendiente.getText().toString().equals("")){
-                    LayoutInflater factory = LayoutInflater.from(UpdateMemoran.this);
+                    LayoutInflater factory = LayoutInflater.from(UpdateCircular.this);
                     final View view = factory.inflate(R.layout.imagevisor, null);
                     ImageView imagevisor_image = view.findViewById(R.id.imagevisor_image);
-                    GlideApp
-                            .with(UpdateMemoran.this)
+                    Glide
+                            .with(UpdateCircular.this)
                             .load(mCurrentPhotoPathPendiente)
-                            .fitCenter()
+                            .apply(RequestOptions.fitCenterTransform())
                             .into(imagevisor_image);
-                    new AlertDFont.Builder(UpdateMemoran.this).setCancelable(false)
+                    new AlertDFont.Builder(UpdateCircular.this).setCancelable(false)
                             .setView(view)
                             .setNegativeButton("Cancelar",
                                     new DialogInterface.OnClickListener() {
@@ -243,16 +252,16 @@ public class UpdateMemoran extends AppCompatActivity {
         NOfficio_Entregada.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (NOfficio_RutaEntregada.getText().toString().contains("MemoranYRecibos/")) {
-                    LayoutInflater factory = LayoutInflater.from(UpdateMemoran.this);
+                if (NOfficio_RutaEntregada.getText().toString().contains("CircularYRecibos/")) {
+                    LayoutInflater factory = LayoutInflater.from(UpdateCircular.this);
                     final View view = factory.inflate(R.layout.imagevisor, null);
                     ImageView imagevisor_image = view.findViewById(R.id.imagevisor_image);
-                    GlideApp
-                            .with(UpdateMemoran.this)
-                            .load(Constant.URL_Address + modelMemoran.getRutaMemoranR())
-                            .fitCenter()
+                    Glide
+                            .with(UpdateCircular.this)
+                            .load(Constant.URL_Address + modelCiruclar.getRutaCircularR())
+                            .apply(RequestOptions.fitCenterTransform())
                             .into(imagevisor_image);
-                    new AlertDFont.Builder(UpdateMemoran.this).setCancelable(false)
+                    new AlertDFont.Builder(UpdateCircular.this).setCancelable(false)
                             .setView(view)
                             .setNegativeButton("Cancelar",
                                     new DialogInterface.OnClickListener() {
@@ -262,15 +271,15 @@ public class UpdateMemoran extends AppCompatActivity {
                                     }).show();
                     return true;
                 }else if (!NOfficio_RutaEntregada.getText().toString().equals("")){
-                    LayoutInflater factory = LayoutInflater.from(UpdateMemoran.this);
+                    LayoutInflater factory = LayoutInflater.from(UpdateCircular.this);
                     final View view = factory.inflate(R.layout.imagevisor, null);
                     ImageView imagevisor_image = view.findViewById(R.id.imagevisor_image);
-                    GlideApp
-                            .with(UpdateMemoran.this)
+                    Glide
+                            .with(UpdateCircular.this)
                             .load(mCurrentPhotoPathEntregada)
-                            .fitCenter()
+                            .apply(RequestOptions.fitCenterTransform())
                             .into(imagevisor_image);
-                    new AlertDFont.Builder(UpdateMemoran.this).setCancelable(false)
+                    new AlertDFont.Builder(UpdateCircular.this).setCancelable(false)
                             .setView(view)
                             .setNegativeButton("Cancelar",
                                     new DialogInterface.OnClickListener() {
@@ -289,7 +298,7 @@ public class UpdateMemoran extends AppCompatActivity {
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
                 if (mCurrentPhotoBase64Entregada.equals("")) {
-                    new AlertDFont.Builder(UpdateMemoran.this)
+                    new AlertDFont.Builder(UpdateCircular.this)
                             .setMessage("La imagen se tomara de: ")
                             .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
                                 @Override
@@ -310,14 +319,14 @@ public class UpdateMemoran extends AppCompatActivity {
                                 }
                             }).show();
                 } else {
-                    final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(UpdateMemoran.this);
+                    final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(UpdateCircular.this);
                     alerBuilder1.setMessage("Desea recapturar la imagen?")
                             .setTitle("Aviso")
                             .setCancelable(false)
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    new AlertDFont.Builder(UpdateMemoran.this)
+                                    new AlertDFont.Builder(UpdateCircular.this)
                                             .setMessage("La imagen se tomara de: ")
                                             .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
                                                 @Override
@@ -344,11 +353,11 @@ public class UpdateMemoran extends AppCompatActivity {
             }
         });
         NOfficio_Nomenclatura = (TextView) findViewById(R.id.NOfficio_Nomenclatura);
-        NOfficio_Nomenclatura.setText(modelMemoran.getCla_memoran());
+        NOfficio_Nomenclatura.setText(modelCiruclar.getCla_circular());
         NOfficio_Nomenclatura.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutInflater factory = LayoutInflater.from(UpdateMemoran.this);
+                LayoutInflater factory = LayoutInflater.from(UpdateCircular.this);
                 
                 //text_entry is an Layout XML file containing two text field to display in alert dialog
                 final View View = factory.inflate(R.layout.numberpickerlayout, null);
@@ -365,8 +374,8 @@ public class UpdateMemoran extends AppCompatActivity {
                 final NumberPicker np4 = (NumberPicker) View.findViewById(R.id.Numberpicker_4);
                 np4.setMaxValue(9);
                 np4.setMinValue(0);
-                new AlertDFont.Builder(UpdateMemoran.this)
-                        .setTitle("Numero de Memoran: ").setView(View).setPositiveButton("Guardar",
+                new AlertDFont.Builder(UpdateCircular.this)
+                        .setTitle("Numero de Circular: ").setView(View).setPositiveButton("Guardar",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 String constructstring = "";
@@ -393,9 +402,9 @@ public class UpdateMemoran extends AppCompatActivity {
                 
             }
         });
-    
+        
         NOfficio_Nombre = (AutoCompleteTextView) findViewById(R.id.NOfficio_Nombre);
-        NOfficio_Nombre.setText(modelMemoran.getNom_memoran());
+        NOfficio_Nombre.setText(modelCiruclar.getNom_circular());
         ArrayAdapter<String> adapterpersonas = new ArrayAdapter<String>
                 (this, R.layout.spinner_item, baseOficios.Return_AutoCompletado(personas, "personas"));
         NOfficio_Nombre.setThreshold(1);
@@ -410,11 +419,11 @@ public class UpdateMemoran extends AppCompatActivity {
         
         
         NOfficio_Dep_Sol = (Spinner) findViewById(R.id.NOfficio_Dep_Sol);
-        ArrayAdapter<String> adapterdepartamentos = new ArrayAdapter<String>(UpdateMemoran.this, R.layout.spinner_item, departamentos);
+        ArrayAdapter<String> adapterdepartamentos = new ArrayAdapter<String>(UpdateCircular.this, R.layout.spinner_item, departamentos);
         NOfficio_Dep_Sol.setAdapter(adapterdepartamentos);
         int lugardedep = 0;
         for (int i = 0; i < id_departamentos.length; i++) {
-            if (id_departamentos[i].equals(modelMemoran.getFkid_depepartamento())) {
+            if (id_departamentos[i].equals(modelCiruclar.getFkid_depepartamento())) {
                 lugardedep = i;
             }
         }
@@ -423,7 +432,7 @@ public class UpdateMemoran extends AppCompatActivity {
     
         NOfficio_Dep_Envi = (AutoCompleteTextView) findViewById(R.id.NOfficio_Dep_Envi);
         NOfficio_Dep_Envi.setTextColor(Color.GRAY);
-        NOfficio_Dep_Envi.setText(modelMemoran.getDepenviada());
+        NOfficio_Dep_Envi.setText(modelCiruclar.getDepenviada());
         ArrayAdapter<String> adapterdep_enviada = new ArrayAdapter<String>(this, R.layout.spinner_item, baseOficios.Return_AutoCompletado(dep_enviada, "dep_enviada"));
         NOfficio_Dep_Envi.setThreshold(1);
         NOfficio_Dep_Envi.setAdapter(adapterdep_enviada);
@@ -436,18 +445,18 @@ public class UpdateMemoran extends AppCompatActivity {
         });
         
         NOfficio_Asunto = (AutoCompleteTextView) findViewById(R.id.NOfficio_Asunto);
-        NOfficio_Asunto.setText(modelMemoran.getAsu_memoran());
+        NOfficio_Asunto.setText(modelCiruclar.getAsu_circular());
         NOfficio_Asunto.setTextColor(Color.GRAY);
         
         NOfficio_Estado = (Spinner) findViewById(R.id.NOfficio_Estado);
         ArrayAdapter<String> adapterestados = new ArrayAdapter<String>
-                (UpdateMemoran.this, R.layout.spinner_item, estados);
+                (UpdateCircular.this, R.layout.spinner_item, estados);
         
         NOfficio_Estado.setAdapter(adapterestados);
-        NOfficio_Estado.setSelection(Integer.valueOf(modelMemoran.getFkid_estado()) - 1);
+        NOfficio_Estado.setSelection(Integer.valueOf(modelCiruclar.getFkid_estado()) - 1);
         
         NOfficio_Ubicacion = (AutoCompleteTextView) findViewById(R.id.NOfficio_Ubicacion);
-        NOfficio_Ubicacion.setText(modelMemoran.getUbi_memoran());
+        NOfficio_Ubicacion.setText(modelCiruclar.getUbi_circular());
         ArrayAdapter<String> adapterubicacion = new ArrayAdapter<String>
                 (this, R.layout.spinner_item, baseOficios.Return_AutoCompletado(ubicacion, "ubicacion"));
         NOfficio_Ubicacion.setThreshold(1);
@@ -460,7 +469,7 @@ public class UpdateMemoran extends AppCompatActivity {
             }
         });
         NOfficio_Notas = (EditText) findViewById(R.id.NOfficio_Notas);
-        NOfficio_Notas.setText(modelMemoran.getNota_memoran());
+        NOfficio_Notas.setText(modelCiruclar.getNota_circular());
         NOfficio_Notas.setTextColor(Color.GRAY);
         NOfficio_Guardar = (TextView) findViewById(R.id.NOfficio_Guardar);
         NOfficio_Guardar.setText("Actualizar");
@@ -468,19 +477,19 @@ public class UpdateMemoran extends AppCompatActivity {
         NOfficio_Guardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (modelMemoran.getFkid_persona().equals(GETSharedPreferences(Constant.SPId_persona, ""))) {
-                    if (NOfficio_RutaPendiente.getText().toString().contains("MemoranYRecibos/")) {
+                if (modelCiruclar.getFkid_persona().equals(GETSharedPreferences(Constant.SPId_persona, ""))) {
+                    if (NOfficio_RutaPendiente.getText().toString().contains("CircularYRecibos/")) {
                         String[] split = NOfficio_RutaPendiente.getText().toString().split("/");
                         mCurrentPhotoNamePendiente = split[1];
                         mCurrentPhotoBase64Pendiente = "";
                     }
-                    if (NOfficio_RutaEntregada.getText().toString().contains("MemoranYRecibos/")) {
+                    if (NOfficio_RutaEntregada.getText().toString().contains("CircularYRecibos/")) {
                         String[] split = NOfficio_RutaEntregada.getText().toString().split("/");
                         mCurrentPhotoNameEntregada = split[1];
                         mCurrentPhotoBase64Entregada = "";
                     }
                     UpdateMemoran(
-                            String.valueOf(modelMemoran.getId_memoran()),
+                            String.valueOf(modelCiruclar.getId_circular()),
                             NOfficio_Nomenclatura.getText().toString(),
                             NOfficio_Nombre.getText().toString(),
                             NOfficio_Asunto.getText().toString(),
@@ -494,7 +503,7 @@ public class UpdateMemoran extends AppCompatActivity {
                             mCurrentPhotoNameEntregada, mCurrentPhotoBase64Entregada);
                     
                 } else {
-                    new AlertDFont.Builder(UpdateMemoran.this)
+                    new AlertDFont.Builder(UpdateCircular.this)
                             .setMessage("Permiso denegado: \n Informar cambios al creador")
                             .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 @Override
@@ -511,8 +520,8 @@ public class UpdateMemoran extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String Email="";
-                AlertDFont.Builder dialogBuilder = new AlertDFont.Builder(UpdateMemoran.this);
-                LayoutInflater inflater = UpdateMemoran.this.getLayoutInflater();
+                AlertDFont.Builder dialogBuilder = new AlertDFont.Builder(UpdateCircular.this);
+                LayoutInflater inflater = UpdateCircular.this.getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.singleedittext, null);
                 dialogBuilder.setView(dialogView);
                 final EditText email = (EditText) dialogView.findViewById(R.id.SingleEmail);
@@ -522,13 +531,13 @@ public class UpdateMemoran extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (!email.getText().toString().isEmpty()&&isValidEmail(email.getText().toString())){
-                            Toast.makeText(UpdateMemoran.this, "Correo valido", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UpdateCircular.this, "Correo valido", Toast.LENGTH_SHORT).show();
                             progressDFont.setMessage("Comenzando Proceso PDF");
                             progressDFont.setCancelable(false);
                             progressDFont.show();
-                            new UpdateMemoran.Share_PDF(UpdateMemoran.this,email.getText().toString()).execute();
+                            new UpdateCircular.Share_PDF(UpdateCircular.this,email.getText().toString()).execute();
                         }else{
-                            Toast.makeText(UpdateMemoran.this, "Correo invalido o vacio", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UpdateCircular.this, "Correo invalido o vacio", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -541,23 +550,22 @@ public class UpdateMemoran extends AppCompatActivity {
                 alertDialog.show();
             }
         });
-        
     }
     
     private void UpdateMemoran(String Id_Memoran,
-                              String Clave_Memoran,
-                              String Nombre_Memoran,
-                              String Asunto_Memoran,
-                              String Ubica_Memoran,
-                              String Notas_Memoran,
-                              String DepEnviada_Memoran,
-                              String idDep_Memoran,
-                              String idEstado_Memoran,
-                              String idPersona_Memoran,
-                              String MemoranPName, String MemoranP64,
-                              String MemoranRName, String MemoranR64) {
-        ProgressDialog.Builder builder = new ProgressDialog.Builder(UpdateMemoran.this);
-        builder.setMessage("Actualizando Info Oficio...");
+                               String Clave_Memoran,
+                               String Nombre_Memoran,
+                               String Asunto_Memoran,
+                               String Ubica_Memoran,
+                               String Notas_Memoran,
+                               String DepEnviada_Memoran,
+                               String idDep_Memoran,
+                               String idEstado_Memoran,
+                               String idPersona_Memoran,
+                               String MemoranPName, String MemoranP64,
+                               String MemoranRName, String MemoranR64) {
+        ProgressDialog.Builder builder = new ProgressDialog.Builder(UpdateCircular.this);
+        builder.setMessage("Actualizando Info Circular...");
         builder.setCancelable(false);
         final android.app.AlertDialog alertDialog = builder.create();
         alertDialog.show();
@@ -581,7 +589,7 @@ public class UpdateMemoran extends AppCompatActivity {
         Log.e("HashMap", object.toString());
         JsonObjectRequest Req = new JsonObjectRequest(
                 Request.Method.POST,
-                WS_UpdateMemoran,
+                WS_UpdateCircular,
                 object,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -590,20 +598,20 @@ public class UpdateMemoran extends AppCompatActivity {
                             alertDialog.dismiss();
                             Log.e("WS-Response", response.toString());
                             if (response.getString("Response").equals("Success")) {
-                                new AlertDFont.Builder(UpdateMemoran.this)
+                                new AlertDFont.Builder(UpdateCircular.this)
                                         .setMessage("Informacion Actualizada").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
                                         Intent returnIntent = new Intent();
                                         setResult(Activity.RESULT_OK, returnIntent);
-                                        UpdateMemoran.this.finish();
+                                        UpdateCircular.this.finish();
                                         
                                     }
                                 }).show();
                             } else {
                                 // TODO: Guardar localmente
-                                new AlertDFont.Builder(UpdateMemoran.this)
+                                new AlertDFont.Builder(UpdateCircular.this)
                                         .setMessage("Su solicitud no se ha podido realizar con exito.")
                                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                             @Override
@@ -622,7 +630,7 @@ public class UpdateMemoran extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         alertDialog.dismiss();
                         Log.d("TAG", "Error Volley: " + error.getCause());
-                        new AlertDFont.Builder(UpdateMemoran.this).setMessage(error.getCause().toString()).show();
+                        new AlertDFont.Builder(UpdateCircular.this).setMessage(error.getCause().toString()).show();
                     }
                 }
         ) {
@@ -635,22 +643,23 @@ public class UpdateMemoran extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constant.Camera_CODE && resultCode == RESULT_OK) {
             setPic();
         }
         if (requestCode == Constant.Camera_CODE_Entregado && resultCode == RESULT_OK) {
             setPicEntregada();
         }
-        if (requestCode == Constant.getgallery && resultCode == RESULT_OK){
+        if (requestCode == getgallery && resultCode == RESULT_OK) {
             try {
                 @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                InputStream inputStream = UpdateMemoran.this.getContentResolver().openInputStream(data.getData());
+                InputStream inputStream = UpdateCircular.this.getContentResolver().openInputStream(data.getData());
                 String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
                 Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream));
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -662,10 +671,10 @@ public class UpdateMemoran extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        if (requestCode == getgallery_entregado && resultCode == RESULT_OK){
+        if (requestCode == getgallery_entregado && resultCode == RESULT_OK) {
             try {
                 @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                InputStream inputStream = UpdateMemoran.this.getContentResolver().openInputStream(data.getData());
+                InputStream inputStream = UpdateCircular.this.getContentResolver().openInputStream(data.getData());
                 String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
                 Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream));
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -679,11 +688,10 @@ public class UpdateMemoran extends AppCompatActivity {
         }
     }
     
-    
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                              CAMARA PERMISSION
     private void getcamara() {
-        if (ContextCompat.checkSelfPermission(UpdateMemoran.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(UpdateMemoran.this, new String[]{
+        if (ContextCompat.checkSelfPermission(UpdateCircular.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(UpdateCircular.this, new String[]{
                     Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.READ_EXTERNAL_STORAGE
@@ -722,7 +730,7 @@ public class UpdateMemoran extends AppCompatActivity {
         String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
         File storageDir = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            storageDir = (Objects.requireNonNull(UpdateMemoran.this)).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            storageDir = (Objects.requireNonNull(UpdateCircular.this)).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         }
         mCurrentPhotoNamePendiente = imageFileName + ".jpg";
         imagePendiente = File.createTempFile(imageFileName, ".jpg", storageDir);
@@ -768,8 +776,8 @@ public class UpdateMemoran extends AppCompatActivity {
     }
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                              CAMARA PERMISSION ENTREGADO
     private void getcamaraEntregada() {
-        if (ContextCompat.checkSelfPermission(UpdateMemoran.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(UpdateMemoran.this, new String[]{
+        if (ContextCompat.checkSelfPermission(UpdateCircular.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(UpdateCircular.this, new String[]{
                     Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.READ_EXTERNAL_STORAGE
@@ -808,7 +816,7 @@ public class UpdateMemoran extends AppCompatActivity {
         String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
         File storageDir = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            storageDir = (Objects.requireNonNull(UpdateMemoran.this)).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            storageDir = (Objects.requireNonNull(UpdateCircular.this)).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         }
         mCurrentPhotoNameEntregada = imageFileName + ".jpg";
         imageEntregada = File.createTempFile(imageFileName, ".jpg", storageDir);
@@ -896,26 +904,26 @@ public class UpdateMemoran extends AppCompatActivity {
                 XMLWorkerHelper xmlWorkerHelper = XMLWorkerHelper.getInstance();
                 String htmlToPDF = "<html><head></head><body> <h1>PDF</h1> </body></html>";
                 xmlWorkerHelper.parseXHtml(writer,document,new StringReader(htmlToPDF));
-                if (!modelMemoran.getRutaMemoranP().isEmpty()) {
+                if (!modelCiruclar.getRutaCircularP().isEmpty()) {
                     int SDK_INT = android.os.Build.VERSION.SDK_INT;
                     if (SDK_INT > 8) {
                         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                         StrictMode.setThreadPolicy(policy);
                     }
-                    String URL = Constant.URL_Address + modelMemoran.getRutaMemoranP();
+                    String URL = Constant.URL_Address + modelCiruclar.getRutaCircularP();
                     Image image = Image.getInstance(URL.replace(" ", "%20"));
                     float scaler = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image.getWidth()) * 100;
                     image.scalePercent(scaler);
                     image.setAlignment(Image.ALIGN_CENTER | Image.BOTTOM);
                     document.add(image);
                 }
-                if (!modelMemoran.getRutaMemoranR().isEmpty()) {
+                if (!modelCiruclar.getRutaCircularR().isEmpty()) {
                     int SDK_INT = android.os.Build.VERSION.SDK_INT;
                     if (SDK_INT > 8) {
                         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                         StrictMode.setThreadPolicy(policy);
                     }
-                    String URL2 = Constant.URL_Address + modelMemoran.getRutaMemoranR();
+                    String URL2 = Constant.URL_Address + modelCiruclar.getRutaCircularR();
                     Image image2 = Image.getInstance(URL2.replace(" ", "%20"));
                     float scaler2 = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image2.getWidth()) * 100;
                     image2.scalePercent(scaler2);
@@ -925,7 +933,7 @@ public class UpdateMemoran extends AppCompatActivity {
                 document.close();
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(UpdateMemoran.this, "PDF Creado", Toast.LENGTH_LONG).show();
+                        Toast.makeText(UpdateCircular.this, "PDF Creado", Toast.LENGTH_LONG).show();
                     }
                 });
                 return true;
@@ -999,7 +1007,7 @@ public class UpdateMemoran extends AppCompatActivity {
                               String ws_PDFEstado,
                               String ws_PDFUbicacion,
                               String ws_PDFNotas){
-        final ProgressDialog builder = new ProgressDialog(UpdateMemoran.this);
+        final ProgressDialog builder = new ProgressDialog(UpdateCircular.this);
         builder.setMessage("Verificando envio de Correo...");
         builder.setCancelable(false);
         builder.show();
@@ -1027,7 +1035,7 @@ public class UpdateMemoran extends AppCompatActivity {
                             builder.dismiss();
                             Log.e("WS-Response", response.toString());
                             if (response.getString("Response").equals("Success")) {
-                                new AlertDFont.Builder(UpdateMemoran.this)
+                                new AlertDFont.Builder(UpdateCircular.this)
                                         .setMessage("Correo Enviado")
                                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                             @Override
@@ -1035,14 +1043,14 @@ public class UpdateMemoran extends AppCompatActivity {
                                                 dialog.dismiss();
                                                 Intent returnIntent = new Intent();
                                                 setResult(Activity.RESULT_OK, returnIntent);
-                                                UpdateMemoran.this.finish();
+                                                UpdateCircular.this.finish();
                                                 
                                             }
                                         })
                                         .show();
                             } else {
                                 // TODO: Guardar localmente
-                                new AlertDFont.Builder(UpdateMemoran.this)
+                                new AlertDFont.Builder(UpdateCircular.this)
                                         .setMessage("Su solicitud no se ha podido realizar con exito.")
                                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                             @Override
@@ -1062,7 +1070,7 @@ public class UpdateMemoran extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         builder.dismiss();
                         Log.e("TAG", "Error Volley: " + error.getCause());
-                        new AlertDFont.Builder(UpdateMemoran.this).setMessage(error.getCause().toString()).show();
+                        new AlertDFont.Builder(UpdateCircular.this).setMessage(error.getCause().toString()).show();
                     }
                 }
         ) {
@@ -1075,7 +1083,7 @@ public class UpdateMemoran extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     private void getgallery(){

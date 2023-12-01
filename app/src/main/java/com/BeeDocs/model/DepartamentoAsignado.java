@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.model;
 
 public class DepartamentoAsignado {
     String id_departamento,nom_departamento,cla_departamento,ncla_departamento;

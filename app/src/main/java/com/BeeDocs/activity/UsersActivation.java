@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -20,7 +20,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.BeeDocs.R;
+import com.BeeDocs.BeeDocsApplication;
 import com.BeeDocs.dialog.AlertDFont;
+import com.BeeDocs.dialog.ProgressDFont;
+import com.BeeDocs.model.Info_Personas;
+import com.BeeDocs.utils.Constant;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -39,20 +44,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.BeeDocs.Constant.Active;
-import static com.BeeDocs.Constant.AddUser_CODE;
-import static com.BeeDocs.Constant.Administrator;
-import static com.BeeDocs.Constant.NO;
-import static com.BeeDocs.Constant.Rol;
-import static com.BeeDocs.Constant.Supervisor;
-import static com.BeeDocs.Constant.UserUpdated_CODE;
-import static com.BeeDocs.Constant.WS_UpdateInfoPersona;
-import static com.BeeDocs.Constant.Worker;
-import static com.BeeDocs.Constant.YES;
+import static com.BeeDocs.utils.Constant.Active;
+import static com.BeeDocs.utils.Constant.AddUser_CODE;
+import static com.BeeDocs.utils.Constant.Administrator;
+import static com.BeeDocs.utils.Constant.NO;
+import static com.BeeDocs.utils.Constant.Rol;
+import static com.BeeDocs.utils.Constant.Supervisor;
+import static com.BeeDocs.utils.Constant.UserUpdated_CODE;
+import static com.BeeDocs.utils.Constant.WS_UpdateInfoPersona;
+import static com.BeeDocs.utils.Constant.Worker;
+import static com.BeeDocs.utils.Constant.YES;
 
 public class UsersActivation extends AppCompatActivity {
     ListView Users_Activation_Lista;
-    List<Info_Personas> Info_Personas;
+    List<com.BeeDocs.model.Info_Personas> Info_Personas;
     CustomListAdapter adapter;
     TextView Users_Activation_Title,Users_Activation_Notice;
     ImageButton User_Activation_back,User_Activation_adduser;
@@ -72,7 +77,7 @@ public class UsersActivation extends AppCompatActivity {
         User_Activation_adduser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(UsersActivation.this,Register.class),AddUser_CODE);
+                startActivityForResult(new Intent(UsersActivation.this, Register.class),AddUser_CODE);
             }
         });
         Users_Activation_Title = (TextView) findViewById(R.id.Users_Activation_Title);
@@ -144,7 +149,7 @@ public class UsersActivation extends AppCompatActivity {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     public void AccountInfo(String Id_persona) {
@@ -203,10 +208,10 @@ public class UsersActivation extends AppCompatActivity {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     public class CustomListAdapter extends BaseAdapter {
-        ImageLoader imageLoader = VolleySingleton.getInstance().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.getInstance().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<Info_Personas> lista;
@@ -366,7 +371,7 @@ public class UsersActivation extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.fragment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,8 +26,16 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.BeeDocs.R;
+import com.BeeDocs.activity.UpdateOfficio;
+import com.BeeDocs.BeeDocsApplication;
+import com.BeeDocs.activity.NuevoOfficio;
+import com.BeeDocs.activity.NuevoOficioTrabajador;
+import com.BeeDocs.db.BaseOficios;
 import com.BeeDocs.dialog.AlertDFont;
+import com.BeeDocs.model.DepartamentoAsignado;
 import com.BeeDocs.model.ModelOficio;
+import com.BeeDocs.utils.Constant;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -35,6 +43,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,24 +54,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.BeeDocs.GlideApp;
-
 import static android.app.Activity.RESULT_OK;
-import static com.BeeDocs.Constant.SPRol;
-import static com.BeeDocs.Constant.WS_BorrarOficio;
-import static com.BeeDocs.Constant.WS_SelectDepartamento;
-import static com.BeeDocs.Constant.WS_SelectEstado;
-import static com.BeeDocs.Constant.WS_SelectOficio;
-import static com.BeeDocs.Constant.WS_SelectOficioAll;
-import static com.BeeDocs.SharedPreference.GETSharedPreferences;
+import static com.BeeDocs.utils.Constant.SPRol;
+import static com.BeeDocs.utils.Constant.WS_BorrarOficio;
+import static com.BeeDocs.utils.Constant.WS_SelectDepartamento;
+import static com.BeeDocs.utils.Constant.WS_SelectEstado;
+import static com.BeeDocs.utils.Constant.WS_SelectOficio;
+import static com.BeeDocs.utils.Constant.WS_SelectOficioAll;
+import static com.BeeDocs.utils.SharedPreference.GETSharedPreferences;
 public class Officios extends Fragment {
     
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    static String[] departamentos, id_departamentos,clave_departamento,ncla_departamento;
-    static String[] estados, id_estados;
+    public static String[] departamentos;
+    public static String[] id_departamentos;
+    public static String[] clave_departamento;
+    static String[] ncla_departamento;
+    public static String[] estados;
+    public static String[] id_estados;
     static List<ModelOficio> modelOficioList;
-    static BaseOficios baseOficios;
+    public static BaseOficios baseOficios;
     private static CustomListAdapter Adapter;
     ImageView Officios_crear;
     ListView Officios_ListaOficios;
@@ -170,7 +181,7 @@ public class Officios extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     private void SelectEstados() {
         JsonArrayRequest Req = new JsonArrayRequest(
@@ -232,7 +243,7 @@ public class Officios extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     public void OneUser_ListaOficios(String id_persona) {
@@ -370,7 +381,7 @@ public class Officios extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     public void OneUser_ListaOficiosAll() {
         HashMap<String, String> map = new HashMap<>();
@@ -509,7 +520,7 @@ public class Officios extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     public void BorrarOficio(String id_Oficio) {
@@ -573,7 +584,7 @@ public class Officios extends Fragment {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     @Override
@@ -617,7 +628,7 @@ public class Officios extends Fragment {
     }
     
     public class CustomListAdapter extends BaseAdapter {
-        ImageLoader imageLoader = VolleySingleton.getInstance().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.getInstance().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<ModelOficio> lista;
@@ -659,13 +670,13 @@ public class Officios extends Fragment {
     
             switch (m.getFkid_estado()) {
                 case "1":
-                    GlideApp.with(convertView).load(R.drawable.amarillo).into(itemOficio_Estado);
+                    Glide.with(convertView).load(R.drawable.amarillo).into(itemOficio_Estado);
                     break;
                 case "2":
-                    GlideApp.with(convertView).load(R.drawable.verde).into(itemOficio_Estado);
+                    Glide.with(convertView).load(R.drawable.verde).into(itemOficio_Estado);
                     break;
                 case "3":
-                    GlideApp.with(convertView).load(R.drawable.rojo).into(itemOficio_Estado);
+                    Glide.with(convertView).load(R.drawable.rojo).into(itemOficio_Estado);
                     break;
             }
             

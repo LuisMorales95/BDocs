@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -6,7 +6,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
+import com.BeeDocs.fragment.Memoran;
+import com.BeeDocs.fragment.Officios;
+import com.BeeDocs.R;
+import com.BeeDocs.utils.SharedPreference;
+import com.BeeDocs.BeeDocsApplication;
 import com.BeeDocs.dialog.AlertDFont;
+import com.BeeDocs.fragment.Circular;
+import com.BeeDocs.fragment.DepartamentosAsignados;
+import com.BeeDocs.fragment.DepartamentosAsignadosCircular;
+import com.BeeDocs.fragment.DepartamentosAsignadosMemoran;
+import com.BeeDocs.utils.Constant;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -30,12 +40,12 @@ import org.json.JSONException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.BeeDocs.Constant.SPNomenclaturaCircular;
-import static com.BeeDocs.Constant.SPNomenclaturaMemoran;
-import static com.BeeDocs.Constant.SPNomenclaturaOficio;
-import static com.BeeDocs.Constant.WS_SelectDepartamento;
-import static com.BeeDocs.SharedPreference.GETSharedPreferences;
-import static com.BeeDocs.SharedPreference.SETSharedPreferences;
+import static com.BeeDocs.utils.Constant.SPNomenclaturaCircular;
+import static com.BeeDocs.utils.Constant.SPNomenclaturaMemoran;
+import static com.BeeDocs.utils.Constant.SPNomenclaturaOficio;
+import static com.BeeDocs.utils.Constant.WS_SelectDepartamento;
+import static com.BeeDocs.utils.SharedPreference.GETSharedPreferences;
+import static com.BeeDocs.utils.SharedPreference.SETSharedPreferences;
 
 public class MainActivity extends AppCompatActivity
         implements
@@ -45,7 +55,10 @@ public class MainActivity extends AppCompatActivity
         Circular.OnFragmentInteractionListener {
 
     ImageButton MainActivity_Add_Usuarios,MainActivity_Add_Departamento,MainActivity_Close;
-    static String[] departamentos, id_departamentos,clave_departamento,ncla_departamento;
+    public static String[] departamentos;
+    public static String[] id_departamentos;
+    static String[] clave_departamento;
+    static String[] ncla_departamento;
     
     AlertDialog alert;
     
@@ -110,7 +123,7 @@ public class MainActivity extends AppCompatActivity
                                 SETSharedPreferences(Constant.SPNomenclaturaCircular,"");
                                 
                                 finish();
-                                startActivity(new Intent(MainActivity.this,SignIn.class));
+                                startActivity(new Intent(MainActivity.this, SignIn.class));
                             }
                         })
                         .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -129,13 +142,13 @@ public class MainActivity extends AppCompatActivity
         MainActivity_Add_Usuarios.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this,UsersActivation.class));
+                startActivity(new Intent(MainActivity.this, UsersActivation.class));
             }
         });
         MainActivity_Add_Departamento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               startActivity(new Intent(MainActivity.this,NuevoDepartamento.class));
+               startActivity(new Intent(MainActivity.this, NuevoDepartamento.class));
             }
         });
         SelectDepartamento();
@@ -186,7 +199,7 @@ public class MainActivity extends AppCompatActivity
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener

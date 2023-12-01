@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name="com.BeeDocs.VolleySingleton"
+        android:name=".BeeDocsApplication"
         android:allowBackup="true"
         android:focusableInTouchMode="true"
         android:hardwareAccelerated="false"
@@ -25,43 +25,43 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.BeeDocs.MainActivity"
+            android:name="com.BeeDocs.activity.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.NuevoOfficio"
+            android:name="com.BeeDocs.activity.NuevoOfficio"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.NuevoMemoran"
+            android:name="com.BeeDocs.activity.NuevoMemoran"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.NuevoCircular"
+            android:name="com.BeeDocs.activity.NuevoCircular"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.NuevoOficioTrabajador"
+            android:name="com.BeeDocs.activity.NuevoOficioTrabajador"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.NuevoMemoranTrabajador"
+            android:name="com.BeeDocs.activity.NuevoMemoranTrabajador"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.NuevoCircularTrabajador"
+            android:name="com.BeeDocs.activity.NuevoCircularTrabajador"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.SignIn"
+            android:name="com.BeeDocs.activity.SignIn"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -70,37 +70,37 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.BeeDocs.Register"
+            android:name="com.BeeDocs.activity.Register"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.UpdateUser"
+            android:name="com.BeeDocs.activity.UpdateUser"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.UpdateOfficio"
+            android:name="com.BeeDocs.activity.UpdateOfficio"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.UpdateMemoran"
+            android:name="com.BeeDocs.activity.UpdateMemoran"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.UpdateCircular"
+            android:name="com.BeeDocs.activity.UpdateCircular"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.UsersActivation"
+            android:name="com.BeeDocs.activity.UsersActivation"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name="com.BeeDocs.Asign_Departamentos"
+            android:name="com.BeeDocs.activity.Asign_Departamentos"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden" />
@@ -115,7 +115,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name="com.BeeDocs.NuevoDepartamento"
+        <activity android:name="com.BeeDocs.activity.NuevoDepartamento"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustPan|stateHidden"/>

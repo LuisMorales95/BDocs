@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.fragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,12 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.BeeDocs.R;
+import com.BeeDocs.utils.SharedPreference;
+import com.BeeDocs.BeeDocsApplication;
 import com.BeeDocs.dialog.AlertDFont;
+import com.BeeDocs.model.DepartamentoAsignado;
+import com.BeeDocs.utils.Constant;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -29,32 +33,27 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.BeeDocs.Constant.WS_SelectAllDepartamentos;
-import static com.BeeDocs.Constant.WS_SelectDepsAsignado;
+import static com.BeeDocs.utils.Constant.WS_SelectAllDepartamentos;
+import static com.BeeDocs.utils.Constant.WS_SelectDepsAsignado;
 
-
-public class DepartamentosAsignados extends Fragment {
+public class DepartamentosAsignadosMemoran extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    ListView DepAsignada_Lista;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private ListView DepAsignada_Lista;
-    
-    
-    private OnFragmentInteractionListener mListener;
-    
-    public DepartamentosAsignados() {}
-    
-    public static DepartamentosAsignados newInstance(String param1, String param2) {
-        DepartamentosAsignados fragment = new DepartamentosAsignados();
+    private DepartamentosAsignados.OnFragmentInteractionListener mListener;
+    public DepartamentosAsignadosMemoran() {}
+    public static DepartamentosAsignadosMemoran newInstance(String param1, String param2) {
+        DepartamentosAsignadosMemoran fragment = new DepartamentosAsignadosMemoran();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -80,10 +79,11 @@ public class DepartamentosAsignados extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
         DepAsignada_Lista = (ListView) view.findViewById(R.id.DepAsignada_Lista);
-        if (SharedPreference.GETSharedPreferences(Constant.SPRol, "").equals("1")) {
-            Departamento(SharedPreference.GETSharedPreferences(Constant.SPId_persona, ""));
-        } else {
+        if (SharedPreference.GETSharedPreferences(Constant.SPRol,"").equals("1")) {
+            Departamento(SharedPreference.GETSharedPreferences(Constant.SPId_persona,""));
+        }else{
             DepartamentoAll();
         }
     }
@@ -115,24 +115,24 @@ public class DepartamentosAsignados extends Fragment {
                                 departamentoAsignado.setId_departamento(response.getJSONObject(i).getString("id_departamento"));
                                 departamentoAsignado.setNom_departamento(response.getJSONObject(i).getString("nom_departamento"));
                                 departamentoAsignado.setCla_departamento(response.getJSONObject(i).getString("cla_departamento"));
-                                departamentoAsignado.setNcla_departamento(response.getJSONObject(i).getString("ncla_departamento"));
+                                departamentoAsignado.setNcla_departamento(response.getJSONObject(i).getString("ncla_departamento").replace("OFICIO","MEMORAN"));
+    
                                 departamentoAsignadosList.add(departamentoAsignado);
                             }
-                            CustomAdapter customAdapter = new CustomAdapter(getActivity(), departamentoAsignadosList);
+                            CustomAdapter customAdapter = new CustomAdapter(getActivity(),departamentoAsignadosList);
                             DepAsignada_Lista.setAdapter(customAdapter);
                             DepAsignada_Lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Oficio, departamentoAsignadosList.get(position).getId_departamento());
-                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaOficio, departamentoAsignadosList.get(position).getNcla_departamento());
+                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaOficio, departamentoAsignadosList.get(position).getNcla_departamento().replace("MEMORAN","OFICIO"));
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Memoran, departamentoAsignadosList.get(position).getId_departamento());
-                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaMemoran, departamentoAsignadosList.get(position).getNcla_departamento().replace("OFICIO","MEMORAN"));
+                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaMemoran, departamentoAsignadosList.get(position).getNcla_departamento());
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Circular, departamentoAsignadosList.get(position).getId_departamento());
-                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaCircular, departamentoAsignadosList.get(position).getNcla_departamento().replace("OFICIO","CIRCULAR"));
-                                    Officios nextFrag = new Officios();
+                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaCircular, departamentoAsignadosList.get(position).getNcla_departamento().replace("MEMORAN","CIRCULAR"));
+                                    Memoran nextFrag= new Memoran();
                                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.MainFragmentContainer, nextFrag)
-                                            .addToBackStack(null).commit();
-                                }
+                                            .addToBackStack(null).commit();                                }
                             });
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -157,9 +157,8 @@ public class DepartamentosAsignados extends Fragment {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
-    
     public void DepartamentoAll() {
         ProgressDialog.Builder builder = new ProgressDialog.Builder(getActivity());
         builder.setMessage("Buscando Departamentos...");
@@ -186,24 +185,23 @@ public class DepartamentosAsignados extends Fragment {
                                 departamentoAsignado.setId_departamento(response.getJSONObject(i).getString("id_departamento"));
                                 departamentoAsignado.setNom_departamento(response.getJSONObject(i).getString("nom_departamento"));
                                 departamentoAsignado.setCla_departamento(response.getJSONObject(i).getString("cla_departamento"));
-                                departamentoAsignado.setNcla_departamento(response.getJSONObject(i).getString("ncla_departamento"));
+                                departamentoAsignado.setNcla_departamento(response.getJSONObject(i).getString("ncla_departamento").replace("OFICIO","MEMORAN"));
                                 departamentoAsignadosList.add(departamentoAsignado);
                             }
-                            CustomAdapter customAdapter = new CustomAdapter(getActivity(), departamentoAsignadosList);
+                            CustomAdapter customAdapter = new CustomAdapter(getActivity(),departamentoAsignadosList);
                             DepAsignada_Lista.setAdapter(customAdapter);
                             DepAsignada_Lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Oficio, departamentoAsignadosList.get(position).getId_departamento());
-                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaOficio, departamentoAsignadosList.get(position).getNcla_departamento());
+                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaOficio, departamentoAsignadosList.get(position).getNcla_departamento().replace("MEMORAN","OFICIO"));
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Memoran, departamentoAsignadosList.get(position).getId_departamento());
-                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaMemoran, departamentoAsignadosList.get(position).getNcla_departamento().replace("OFICIO","MEMORAN"));
+                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaMemoran, departamentoAsignadosList.get(position).getNcla_departamento());
                                     SharedPreference.SETSharedPreferences(Constant.SPID_Circular, departamentoAsignadosList.get(position).getId_departamento());
-                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaCircular, departamentoAsignadosList.get(position).getNcla_departamento().replace("OFICIO","CIRCULAR"));
-                                    Officios nextFrag = new Officios();
+                                    SharedPreference.SETSharedPreferences(Constant.SPNomenclaturaCircular, departamentoAsignadosList.get(position).getNcla_departamento().replace("MEMORAN","CIRCULAR"));
+                                    Memoran nextFrag= new Memoran();
                                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.MainFragmentContainer, nextFrag)
-                                            .addToBackStack(null).commit();
-                                }
+                                            .addToBackStack(null).commit();                                }
                             });
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -228,40 +226,20 @@ public class DepartamentosAsignados extends Fragment {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
     
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
     
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
     
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
+    
+    
+    
+    
+    
     
     public class CustomAdapter extends BaseAdapter {
-        ImageLoader imageLoader = VolleySingleton.getInstance().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.getInstance().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<DepartamentoAsignado> departamentoAsignadoList;
@@ -296,9 +274,36 @@ public class DepartamentosAsignados extends Fragment {
             DepartamentoAsignado departamentoAsignado = departamentoAsignadoList.get(position);
             textView1.setText(departamentoAsignado.getNom_departamento());
             textView1.setTextColor(Color.GRAY);
-            textView2.setText(departamentoAsignado.getCla_departamento() + "  " + departamentoAsignado.getNcla_departamento());
+            textView2.setText(departamentoAsignado.getCla_departamento()+"  "+departamentoAsignado.getNcla_departamento());
             textView2.setTextColor(Color.GRAY);
             return convertView;
         }
     }
+    
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof DepartamentosAsignados.OnFragmentInteractionListener) {
+            mListener = (DepartamentosAsignados.OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
+    }
 }
+

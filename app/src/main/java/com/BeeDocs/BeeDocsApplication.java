@@ -4,21 +4,21 @@ import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.BeeDocs.model.LruBitmapCache;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
+public class BeeDocsApplication extends Application {
 
-public class VolleySingleton extends Application {
-
-	public static final String TAG = VolleySingleton.class
+	public static final String TAG = BeeDocsApplication.class
 			.getSimpleName();
 
 	private RequestQueue mRequestQueue;
 	private ImageLoader mImageLoader;
 
-	private static VolleySingleton mInstance;
+	private static BeeDocsApplication mInstance;
 
 	@Override
 	public void onCreate() {
@@ -26,7 +26,7 @@ public class VolleySingleton extends Application {
         mInstance = this;
     }
    
-	public static synchronized VolleySingleton getInstance() {
+	public static synchronized BeeDocsApplication getInstance() {
 		return mInstance;
 	}
 	

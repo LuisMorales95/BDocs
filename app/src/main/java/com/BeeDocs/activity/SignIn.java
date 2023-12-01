@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,7 +14,11 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.BeeDocs.R;
+import com.BeeDocs.BeeDocsApplication;
 import com.BeeDocs.dialog.AlertDFont;
+import com.BeeDocs.dialog.ProgressDFont;
+import com.BeeDocs.utils.Constant;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -27,9 +31,9 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.BeeDocs.Constant.WS_SignIn;
-import static com.BeeDocs.SharedPreference.GETSharedPreferences;
-import static com.BeeDocs.SharedPreference.SETSharedPreferences;
+import static com.BeeDocs.utils.Constant.WS_SignIn;
+import static com.BeeDocs.utils.SharedPreference.GETSharedPreferences;
+import static com.BeeDocs.utils.SharedPreference.SETSharedPreferences;
 
 public class SignIn extends AppCompatActivity {
     private ConstraintLayout background;
@@ -125,7 +129,7 @@ public class SignIn extends AppCompatActivity {
                                 SETSharedPreferences(Constant.SPToken,response.getString("token"));
                                 SETSharedPreferences(Constant.SPRol,response.getString("rol"));
                                 SignIn.this.finish();
-                                startActivity(new Intent(SignIn.this,MainActivity.class));
+                                startActivity(new Intent(SignIn.this, MainActivity.class));
                             }
                             
                         } catch (JSONException e) {
@@ -161,7 +165,7 @@ public class SignIn extends AppCompatActivity {
             
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req, tag_json_obj);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req, tag_json_obj);
     }
     
     

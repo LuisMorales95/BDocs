@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -29,12 +29,18 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.BeeDocs.R;
+import com.BeeDocs.utils.SharedPreference;
+import com.BeeDocs.utils.StringUtils;
+import com.BeeDocs.BeeDocsApplication;
+import com.BeeDocs.db.BaseOficios;
 import com.BeeDocs.dialog.AlertDFont;
+import com.BeeDocs.fragment.Circular;
+import com.BeeDocs.utils.Constant;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -58,14 +64,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.BeeDocs.GlideApp;
+import static com.BeeDocs.utils.Constant.WS_SubirCircular;
+import static com.BeeDocs.utils.Constant.getgallery;
+import static com.BeeDocs.utils.Constant.getgallery_entregado;
+import static com.BeeDocs.utils.SharedPreference.GETSharedPreferences;
 
-import static com.BeeDocs.Constant.WS_SubirCircular;
-import static com.BeeDocs.Constant.getgallery;
-import static com.BeeDocs.Constant.getgallery_entregado;
-import static com.BeeDocs.SharedPreference.GETSharedPreferences;
-
-public class NuevoCircular extends AppCompatActivity {
+public class NuevoCircularTrabajador extends AppCompatActivity {
     
     AutoCompleteTextView NOfficio_Nombre,NOfficio_Dep_Envi,NOfficio_Asunto,NOfficio_Ubicacion;
     Button
@@ -76,7 +80,7 @@ public class NuevoCircular extends AppCompatActivity {
             NOfficio_RutaPendiente,NOfficio_RutaEntregada;
     BaseOficios baseOficios;
     
-    private String [] departamentos=Circular.departamentos, id_departamentos=Circular.id_departamentos,clave_departamento = Circular.clave_departamento;
+    private String [] departamentos= Circular.departamentos, id_departamentos=Circular.id_departamentos,clave_departamento = Circular.clave_departamento;
     private String [] estados=Circular.estados, id_estados=Circular.id_estados;
     
     private String [] personas = {"id_persona","nom_persona"};
@@ -95,15 +99,14 @@ public class NuevoCircular extends AppCompatActivity {
     private File imageEntregada=null;
     private OutputStream outputStreamEntregada = null;
     
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nuevo_officio);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        ((TextView) findViewById(R.id.NOfficio_Titulo)).setText("Ciruclar");
-        
         baseOficios = new BaseOficios(this);
-        
+        ((TextView) findViewById(R.id.NOfficio_Titulo)).setText("Circular");
         NOfficio_RutaPendiente = (TextView) findViewById(R.id.NOfficio_RutaPendiente);
         NOfficio_RutaPendiente.setText("");
         NOfficio_RutaEntregada = (TextView) findViewById(R.id.NOfficio_RutaEntregada);
@@ -111,14 +114,14 @@ public class NuevoCircular extends AppCompatActivity {
         NOfficio_Pendiente = (Button) findViewById(R.id.NOfficio_Pendiente);
         NOfficio_Pendiente.setText("Circular");
         NOfficio_Entregada = (Button) findViewById(R.id.NOfficio_Entregada);
-        
+    
         NOfficio_Pendiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
                 if (mCurrentPhotoBase64Pendiente.equals("")) {
-                    new AlertDFont.Builder(NuevoCircular.this)
+                    new AlertDFont.Builder(NuevoCircularTrabajador.this)
                             .setMessage("La imagen se tomara de: ")
                             .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
                                 @Override
@@ -136,18 +139,17 @@ public class NuevoCircular extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     getgallery();
-                        
                                 }
                             }).show();
                 } else {
-                    final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(NuevoCircular.this);
+                    final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(NuevoCircularTrabajador.this);
                     alerBuilder1.setMessage("Desea recapturar la imagen?")
                             .setTitle("Aviso")
                             .setCancelable(false)
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    new AlertDFont.Builder(NuevoCircular.this)
+                                    new AlertDFont.Builder(NuevoCircularTrabajador.this)
                                             .setMessage("La imagen se tomara de: ")
                                             .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
                                                 @Override
@@ -165,7 +167,6 @@ public class NuevoCircular extends AppCompatActivity {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     getgallery();
-                                        
                                                 }
                                             }).show();
                                 }
@@ -175,63 +176,13 @@ public class NuevoCircular extends AppCompatActivity {
                 }
             }
         });
-        NOfficio_Pendiente.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (!NOfficio_Pendiente.getText().toString().equals("")){
-                    LayoutInflater factory = LayoutInflater.from(NuevoCircular.this);
-                    final View view = factory.inflate(R.layout.imagevisor, null);
-                    ImageView imagevisor_image = view.findViewById(R.id.imagevisor_image);
-                    GlideApp
-                            .with(NuevoCircular.this)
-                            .load(mCurrentPhotoPathPendiente)
-                            .fitCenter()
-                            .into(imagevisor_image);
-                    new AlertDFont.Builder(NuevoCircular.this).setCancelable(false)
-                            .setView(view)
-                            .setNegativeButton("Cancelar",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int whichButton) {
-                                            dialog.dismiss();
-                                        }
-                                    }).show();
-                    return true;
-                }
-                return false;
-            }
-        });
-        NOfficio_Entregada.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (!NOfficio_RutaEntregada.getText().toString().equals("")){
-                    LayoutInflater factory = LayoutInflater.from(NuevoCircular.this);
-                    final View view = factory.inflate(R.layout.imagevisor, null);
-                    ImageView imagevisor_image = view.findViewById(R.id.imagevisor_image);
-                    GlideApp
-                            .with(NuevoCircular.this)
-                            .load(mCurrentPhotoPathEntregada)
-                            .fitCenter()
-                            .into(imagevisor_image);
-                    new AlertDFont.Builder(NuevoCircular.this).setCancelable(false)
-                            .setView(view)
-                            .setNegativeButton("Cancelar",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int whichButton) {
-                                            dialog.dismiss();
-                                        }
-                                    }).show();
-                    return true;
-                }
-                return false;
-            }
-        });
         NOfficio_Entregada.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
                 if (mCurrentPhotoBase64Entregada.equals("")) {
-                    new AlertDFont.Builder(NuevoCircular.this)
+                    new AlertDFont.Builder(NuevoCircularTrabajador.this)
                             .setMessage("La imagen se tomara de: ")
                             .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
                                 @Override
@@ -252,14 +203,14 @@ public class NuevoCircular extends AppCompatActivity {
                                 }
                             }).show();
                 } else {
-                    final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(NuevoCircular.this);
+                    final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(NuevoCircularTrabajador.this);
                     alerBuilder1.setMessage("Desea recapturar la imagen?")
                             .setTitle("Aviso")
                             .setCancelable(false)
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    new AlertDFont.Builder(NuevoCircular.this)
+                                    new AlertDFont.Builder(NuevoCircularTrabajador.this)
                                             .setMessage("La imagen se tomara de: ")
                                             .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
                                                 @Override
@@ -291,7 +242,7 @@ public class NuevoCircular extends AppCompatActivity {
         NOfficio_Nomenclatura.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutInflater factory = LayoutInflater.from(NuevoCircular.this);
+                LayoutInflater factory = LayoutInflater.from(NuevoCircularTrabajador.this);
                 
                 //text_entry is an Layout XML file containing two text field to display in alert dialog
                 final View View = factory.inflate(R.layout.numberpickerlayout, null);
@@ -308,8 +259,8 @@ public class NuevoCircular extends AppCompatActivity {
                 final NumberPicker np4= (NumberPicker) View.findViewById(R.id.Numberpicker_4);
                 np4.setMaxValue(9);
                 np4.setMinValue(0);
-                new AlertDFont.Builder(NuevoCircular.this)
-                        .setTitle("Numero de Ciruclar: ").setView(View).setPositiveButton("Guardar",
+                new AlertDFont.Builder(NuevoCircularTrabajador.this)
+                        .setTitle("Numero de Circular: ").setView(View).setPositiveButton("Guardar",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 String constructstring="";
@@ -350,8 +301,7 @@ public class NuevoCircular extends AppCompatActivity {
         });
         
         NOfficio_Dep_Sol = (Spinner) findViewById(R.id.NOfficio_Dep_Sol);
-        ArrayAdapter<String> adapterdepartamentos = new ArrayAdapter<String>
-                (NuevoCircular.this,R.layout.spinner_item,departamentos);
+        ArrayAdapter<String> adapterdepartamentos = new ArrayAdapter<String>(NuevoCircularTrabajador.this,R.layout.spinner_item,departamentos);
         NOfficio_Dep_Sol.setAdapter(adapterdepartamentos);
         int lugardedep = 0;
         for (int i = 0; i < id_departamentos.length; i++) {
@@ -379,7 +329,7 @@ public class NuevoCircular extends AppCompatActivity {
         
         NOfficio_Estado = (Spinner) findViewById(R.id.NOfficio_Estado);
         ArrayAdapter<String> adapterestados = new ArrayAdapter<String>
-                (NuevoCircular.this,R.layout.spinner_item,estados);
+                (NuevoCircularTrabajador.this,R.layout.spinner_item,estados);
         NOfficio_Estado.setAdapter(adapterestados);
         
         NOfficio_Ubicacion = (AutoCompleteTextView) findViewById(R.id.NOfficio_Ubicacion);
@@ -439,7 +389,7 @@ public class NuevoCircular extends AppCompatActivity {
                                  String MemoranP64,
                                  String MemoranRName,
                                  String MemoranR64) {
-        ProgressDialog.Builder builder = new ProgressDialog.Builder(NuevoCircular.this);
+        ProgressDialog.Builder builder = new ProgressDialog.Builder(NuevoCircularTrabajador.this);
         builder.setMessage("Subiendo Circular...");
         builder.setCancelable(false);
         final android.app.AlertDialog alertDialog = builder.create();
@@ -472,23 +422,25 @@ public class NuevoCircular extends AppCompatActivity {
                             alertDialog.dismiss();
                             Log.e("WS-Response",response.toString());
                             if (response.getString("Response").equals("Success")){
-                                new AlertDFont.Builder(NuevoCircular.this)
-                                        .setMessage("Informacion Guardada").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        NuevoCircular.this.finish();
-                                    }
-                                }).show();
+                                new AlertDFont.Builder(NuevoCircularTrabajador.this)
+                                        .setMessage("Informacion Guardada")
+                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                                NuevoCircularTrabajador.this.finish();
+                                            }
+                                        }).show();
                             }else{
                                 // TODO: Guardar localmente
-                                new AlertDFont.Builder(NuevoCircular.this)
-                                        .setMessage("Su solicitud no se ha podido realizar con exito.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                }).show();
+                                new AlertDFont.Builder(NuevoCircularTrabajador.this)
+                                        .setMessage("Su solicitud no se ha podido realizar con exito.")
+                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        }).show();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -500,7 +452,7 @@ public class NuevoCircular extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         alertDialog.dismiss();
                         Log.d("TAG", "Error Volley: " + error.getCause());
-                        new AlertDFont.Builder(NuevoCircular.this).setMessage(error.getCause().toString()).show();
+                        new AlertDFont.Builder(NuevoCircularTrabajador.this).setMessage(error.getCause().toString()).show();
                     }
                 }
         ) {
@@ -513,21 +465,23 @@ public class NuevoCircular extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
+    
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode==Constant.Camera_CODE && resultCode==RESULT_OK){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Constant.Camera_CODE && resultCode == RESULT_OK) {
             setPic();
         }
-        if (requestCode==Constant.Camera_CODE_Entregado && resultCode==RESULT_OK){
+        if (requestCode == Constant.Camera_CODE_Entregado && resultCode == RESULT_OK) {
             setPicEntregada();
         }
-        if (requestCode == Constant.getgallery && resultCode == RESULT_OK){
+        if (requestCode == getgallery && resultCode == RESULT_OK) {
             try {
                 @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                InputStream inputStream = NuevoCircular.this.getContentResolver().openInputStream(data.getData());
+                InputStream inputStream = NuevoCircularTrabajador.this.getContentResolver().openInputStream(data.getData());
                 String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
                 Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream));
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -539,10 +493,10 @@ public class NuevoCircular extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        if (requestCode == getgallery_entregado && resultCode == RESULT_OK){
+        if (requestCode == getgallery_entregado && resultCode == RESULT_OK) {
             try {
                 @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                InputStream inputStream = NuevoCircular.this.getContentResolver().openInputStream(data.getData());
+                InputStream inputStream = NuevoCircularTrabajador.this.getContentResolver().openInputStream(data.getData());
                 String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
                 Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream));
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -555,13 +509,10 @@ public class NuevoCircular extends AppCompatActivity {
             }
         }
     }
-    
-    
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                              CAMARA PERMISSION
-    
     private void getcamara() {
-        if (ContextCompat.checkSelfPermission(NuevoCircular.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(NuevoCircular.this, new String[]{
+        if (ContextCompat.checkSelfPermission(NuevoCircularTrabajador.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(NuevoCircularTrabajador.this, new String[]{
                     Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.READ_EXTERNAL_STORAGE
@@ -583,7 +534,7 @@ public class NuevoCircular extends AppCompatActivity {
                 }
                 if (photoFile != null) {
                     Uri photoURI = FileProvider.getUriForFile
-                            (getApplicationContext(), "com.BeeDocs.android.fileprovider", photoFile);
+                            (getApplicationContext(), "docassistant.prodevco.com.docassistant.android.fileprovider", photoFile);
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                         takePictureIntent.setClipData(ClipData.newRawUri("", photoURI));
@@ -600,7 +551,7 @@ public class NuevoCircular extends AppCompatActivity {
         String imageFileName = getResources().getString(R.string.app_name)+"_"+ timestamp;
         File storageDir = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            storageDir = (Objects.requireNonNull(NuevoCircular.this)).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            storageDir = (Objects.requireNonNull(NuevoCircularTrabajador.this)).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         }
         mCurrentPhotoNamePendiente = imageFileName+".jpg";
         imagePendiente = File.createTempFile(imageFileName, ".jpg", storageDir);
@@ -646,8 +597,8 @@ public class NuevoCircular extends AppCompatActivity {
     }
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                              CAMARA PERMISSION ENTREGADO
     private void getcamaraEntregada() {
-        if (ContextCompat.checkSelfPermission(NuevoCircular.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(NuevoCircular.this, new String[]{
+        if (ContextCompat.checkSelfPermission(NuevoCircularTrabajador.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(NuevoCircularTrabajador.this, new String[]{
                     Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.READ_EXTERNAL_STORAGE
@@ -669,7 +620,7 @@ public class NuevoCircular extends AppCompatActivity {
                 }
                 if (photoFile != null) {
                     Uri photoURI = FileProvider.getUriForFile
-                            (getApplicationContext(), "com.BeeDocs.android.fileprovider", photoFile);
+                            (getApplicationContext(), "docassistant.prodevco.com.docassistant.android.fileprovider", photoFile);
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                         takePictureIntent.setClipData(ClipData.newRawUri("", photoURI));
@@ -686,7 +637,7 @@ public class NuevoCircular extends AppCompatActivity {
         String imageFileName = getResources().getString(R.string.app_name)+"_"+ timestamp;
         File storageDir = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            storageDir = (Objects.requireNonNull(NuevoCircular.this)).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            storageDir = (Objects.requireNonNull(NuevoCircularTrabajador.this)).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         }
         mCurrentPhotoNameEntregada = imageFileName+".jpg";
         imageEntregada = File.createTempFile(imageFileName, ".jpg", storageDir);

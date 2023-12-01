@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -34,12 +34,21 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.BeeDocs.fragment.Officios;
+import com.BeeDocs.R;
+import com.BeeDocs.utils.SharedPreference;
+import com.BeeDocs.utils.StringUtils;
+import com.BeeDocs.BeeDocsApplication;
+import com.BeeDocs.db.BaseOficios;
 import com.BeeDocs.dialog.AlertDFont;
+import com.BeeDocs.utils.Constant;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,10 +67,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.BeeDocs.Constant.getgallery;
-import static com.BeeDocs.Constant.WS_SubirOficio;
-import static com.BeeDocs.Constant.getgallery_entregado;
-import static com.BeeDocs.SharedPreference.GETSharedPreferences;
+import static com.BeeDocs.utils.Constant.getgallery;
+import static com.BeeDocs.utils.Constant.WS_SubirOficio;
+import static com.BeeDocs.utils.Constant.getgallery_entregado;
+import static com.BeeDocs.utils.SharedPreference.GETSharedPreferences;
 
 public class NuevoOfficio extends AppCompatActivity {
     
@@ -169,10 +178,10 @@ public class NuevoOfficio extends AppCompatActivity {
                     LayoutInflater factory = LayoutInflater.from(NuevoOfficio.this);
                     final View view = factory.inflate(R.layout.imagevisor, null);
                     ImageView imagevisor_image = view.findViewById(R.id.imagevisor_image);
-                    GlideApp
+                    Glide
                             .with(NuevoOfficio.this)
                             .load(mCurrentPhotoPathPendiente)
-                            .fitCenter()
+                            .apply(RequestOptions.fitCenterTransform())
                             .into(imagevisor_image);
                     new AlertDFont.Builder(NuevoOfficio.this).setCancelable(false)
                             .setView(view)
@@ -194,10 +203,10 @@ public class NuevoOfficio extends AppCompatActivity {
                     LayoutInflater factory = LayoutInflater.from(NuevoOfficio.this);
                     final View view = factory.inflate(R.layout.imagevisor, null);
                     ImageView imagevisor_image = view.findViewById(R.id.imagevisor_image);
-                    GlideApp
+                    Glide
                             .with(NuevoOfficio.this)
                             .load(mCurrentPhotoPathEntregada)
-                            .fitCenter()
+                            .apply(RequestOptions.fitCenterTransform())
                             .into(imagevisor_image);
                     new AlertDFont.Builder(NuevoOfficio.this).setCancelable(false)
                             .setView(view)
@@ -495,7 +504,7 @@ public class NuevoOfficio extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     @Override

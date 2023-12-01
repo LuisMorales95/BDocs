@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -20,6 +20,9 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.BeeDocs.model.Info_Personas;
+import com.BeeDocs.R;
+import com.BeeDocs.BeeDocsApplication;
 import com.BeeDocs.dialog.AlertDFont;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -38,9 +41,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.BeeDocs.Constant.WS_BorrarAsignarDepartamento;
-import static com.BeeDocs.Constant.WS_SelectTieneDep;
-import static com.BeeDocs.Constant.WS_SubirAsignarDepartamento;
+import static com.BeeDocs.utils.Constant.WS_BorrarAsignarDepartamento;
+import static com.BeeDocs.utils.Constant.WS_SelectTieneDep;
+import static com.BeeDocs.utils.Constant.WS_SubirAsignarDepartamento;
 
 public class Asign_Departamentos extends AppCompatActivity {
     ArrayAdapter<String> adapterdepartamentos;
@@ -169,7 +172,7 @@ public class Asign_Departamentos extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     public class departam{
         String iddeps,nomdeps;
@@ -301,7 +304,7 @@ public class Asign_Departamentos extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     public void reload(){
         if (Build.VERSION.SDK_INT >= 11) {
@@ -320,7 +323,7 @@ public class Asign_Departamentos extends AppCompatActivity {
     
     public class CustomListDepartamentos extends BaseAdapter{
     
-        ImageLoader imageLoader = VolleySingleton.getInstance().getImageLoader();
+        ImageLoader imageLoader = BeeDocsApplication.getInstance().getImageLoader();
         private LayoutInflater inflater;
         private Activity activity;
         private List<departam> departamentoAsignados;
@@ -426,7 +429,7 @@ public class Asign_Departamentos extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
 }

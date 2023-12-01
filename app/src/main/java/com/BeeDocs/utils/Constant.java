@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.utils;
 
 public class Constant {
     //TODO: GENERIAL INFOMATION

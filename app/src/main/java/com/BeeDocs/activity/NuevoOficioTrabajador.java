@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -33,7 +33,14 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.BeeDocs.fragment.Officios;
+import com.BeeDocs.R;
+import com.BeeDocs.utils.SharedPreference;
+import com.BeeDocs.utils.StringUtils;
+import com.BeeDocs.BeeDocsApplication;
+import com.BeeDocs.db.BaseOficios;
 import com.BeeDocs.dialog.AlertDFont;
+import com.BeeDocs.utils.Constant;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -57,12 +64,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.BeeDocs.Constant.WS_SubirMemoran;
-import static com.BeeDocs.Constant.getgallery;
-import static com.BeeDocs.Constant.getgallery_entregado;
-import static com.BeeDocs.SharedPreference.GETSharedPreferences;
+import static com.BeeDocs.utils.Constant.WS_SubirOficio;
+import static com.BeeDocs.utils.Constant.getgallery;
+import static com.BeeDocs.utils.Constant.getgallery_entregado;
+import static com.BeeDocs.utils.SharedPreference.GETSharedPreferences;
 
-public class NuevoMemoranTrabajador extends AppCompatActivity {
+public class NuevoOficioTrabajador extends AppCompatActivity {
     
     AutoCompleteTextView NOfficio_Nombre,NOfficio_Dep_Envi,NOfficio_Asunto,NOfficio_Ubicacion;
     Button
@@ -73,12 +80,13 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
             NOfficio_RutaPendiente,NOfficio_RutaEntregada;
     BaseOficios baseOficios;
     
-    private String [] departamentos=Memoran.departamentos, id_departamentos=Memoran.id_departamentos,clave_departamento = Memoran.clave_departamento;
-    private String [] estados=Memoran.estados, id_estados=Memoran.id_estados;
+    private String [] departamentos= Officios.departamentos, id_departamentos=Officios.id_departamentos,clave_departamento = Officios.clave_departamento;
+    private String [] estados=Officios.estados, id_estados=Officios.id_estados;
     
     private String [] personas = {"id_persona","nom_persona"};
     private String [] dep_enviada = {"id_dep_envi","nom_dep_envi"};
     private String [] ubicacion = {"id_ubica","nom_ubica"};
+    
     
     private String mCurrentPhotoBase64Pendiente="";
     private String mCurrentPhotoPathPendiente="";
@@ -99,22 +107,20 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
         setContentView(R.layout.activity_nuevo_officio);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         baseOficios = new BaseOficios(this);
-        ((TextView) findViewById(R.id.NOfficio_Titulo)).setText("Memoran");
         NOfficio_RutaPendiente = (TextView) findViewById(R.id.NOfficio_RutaPendiente);
         NOfficio_RutaPendiente.setText("");
         NOfficio_RutaEntregada = (TextView) findViewById(R.id.NOfficio_RutaEntregada);
         NOfficio_RutaEntregada.setText("");
         NOfficio_Pendiente = (Button) findViewById(R.id.NOfficio_Pendiente);
-        NOfficio_Pendiente.setText("Memoran");
         NOfficio_Entregada = (Button) findViewById(R.id.NOfficio_Entregada);
-        
+    
         NOfficio_Pendiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
                 if (mCurrentPhotoBase64Pendiente.equals("")) {
-                    new AlertDFont.Builder(NuevoMemoranTrabajador.this)
+                    new AlertDFont.Builder(NuevoOficioTrabajador.this)
                             .setMessage("La imagen se tomara de: ")
                             .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
                                 @Override
@@ -136,14 +142,14 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
                                 }
                             }).show();
                 } else {
-                    final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(NuevoMemoranTrabajador.this);
+                    final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(NuevoOficioTrabajador.this);
                     alerBuilder1.setMessage("Desea recapturar la imagen?")
                             .setTitle("Aviso")
                             .setCancelable(false)
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    new AlertDFont.Builder(NuevoMemoranTrabajador.this)
+                                    new AlertDFont.Builder(NuevoOficioTrabajador.this)
                                             .setMessage("La imagen se tomara de: ")
                                             .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
                                                 @Override
@@ -176,7 +182,7 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
                 if (mCurrentPhotoBase64Entregada.equals("")) {
-                    new AlertDFont.Builder(NuevoMemoranTrabajador.this)
+                    new AlertDFont.Builder(NuevoOficioTrabajador.this)
                             .setMessage("La imagen se tomara de: ")
                             .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
                                 @Override
@@ -197,14 +203,14 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
                                 }
                             }).show();
                 } else {
-                    final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(NuevoMemoranTrabajador.this);
+                    final android.app.AlertDialog.Builder alerBuilder1 = new android.app.AlertDialog.Builder(NuevoOficioTrabajador.this);
                     alerBuilder1.setMessage("Desea recapturar la imagen?")
                             .setTitle("Aviso")
                             .setCancelable(false)
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    new AlertDFont.Builder(NuevoMemoranTrabajador.this)
+                                    new AlertDFont.Builder(NuevoOficioTrabajador.this)
                                             .setMessage("La imagen se tomara de: ")
                                             .setPositiveButton("Camara", new DialogInterface.OnClickListener() {
                                                 @Override
@@ -230,13 +236,13 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
                 }
             }
         });
-        
+    
         NOfficio_Nomenclatura = (TextView) findViewById(R.id.NOfficio_Nomenclatura);
-        NOfficio_Nomenclatura.setText(SharedPreference.GETSharedPreferences(Constant.SPNomenclaturaMemoran,""));
+        NOfficio_Nomenclatura.setText(SharedPreference.GETSharedPreferences(Constant.SPNomenclaturaOficio,""));
         NOfficio_Nomenclatura.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutInflater factory = LayoutInflater.from(NuevoMemoranTrabajador.this);
+                LayoutInflater factory = LayoutInflater.from(NuevoOficioTrabajador.this);
                 
                 //text_entry is an Layout XML file containing two text field to display in alert dialog
                 final View View = factory.inflate(R.layout.numberpickerlayout, null);
@@ -253,7 +259,7 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
                 final NumberPicker np4= (NumberPicker) View.findViewById(R.id.Numberpicker_4);
                 np4.setMaxValue(9);
                 np4.setMinValue(0);
-                new AlertDFont.Builder(NuevoMemoranTrabajador.this)
+                new AlertDFont.Builder(NuevoOficioTrabajador.this)
                         .setTitle("Numero de Offico: ").setView(View).setPositiveButton("Guardar",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -295,11 +301,11 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
         });
         
         NOfficio_Dep_Sol = (Spinner) findViewById(R.id.NOfficio_Dep_Sol);
-        ArrayAdapter<String> adapterdepartamentos = new ArrayAdapter<String>(NuevoMemoranTrabajador.this,R.layout.spinner_item,departamentos);
+        ArrayAdapter<String> adapterdepartamentos = new ArrayAdapter<String>(NuevoOficioTrabajador.this,R.layout.spinner_item,departamentos);
         NOfficio_Dep_Sol.setAdapter(adapterdepartamentos);
         int lugardedep = 0;
         for (int i = 0; i < id_departamentos.length; i++) {
-            if (id_departamentos[i].equals(SharedPreference.GETSharedPreferences(Constant.SPID_Memoran,""))) {
+            if (id_departamentos[i].equals(SharedPreference.GETSharedPreferences(Constant.SPID_Oficio,""))) {
                 lugardedep = i;
             }
         }
@@ -323,7 +329,7 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
         
         NOfficio_Estado = (Spinner) findViewById(R.id.NOfficio_Estado);
         ArrayAdapter<String> adapterestados = new ArrayAdapter<String>
-                (NuevoMemoranTrabajador.this,R.layout.spinner_item,estados);
+                (NuevoOficioTrabajador.this,R.layout.spinner_item,estados);
         NOfficio_Estado.setAdapter(adapterestados);
         
         NOfficio_Ubicacion = (AutoCompleteTextView) findViewById(R.id.NOfficio_Ubicacion);
@@ -331,7 +337,7 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
                 (this,R.layout.spinner_item,baseOficios.Return_AutoCompletado(ubicacion,"ubicacion"));
         NOfficio_Ubicacion.setThreshold(1);
         NOfficio_Ubicacion.setAdapter(adapterubicacion);
-        NOfficio_Ubicacion.setHint("Ubicación de Memoran");
+        NOfficio_Ubicacion.setHint("Ubicación de Oficio");
         NOfficio_Ubicacion.setTextColor(Color.GRAY);
         NOfficio_Ubicacion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -350,7 +356,7 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
                 baseOficios.SearchAddIfExists(NOfficio_Nombre.getText().toString(),"personas",personas);
                 baseOficios.SearchAddIfExists(NOfficio_Dep_Envi.getText().toString(),"dep_enviada",dep_enviada);
                 baseOficios.SearchAddIfExists(NOfficio_Ubicacion.getText().toString(),"ubicacion",ubicacion);
-                RegisterMemoran(
+                RegisterOficio(
                         NOfficio_Nomenclatura.getText().toString(),
                         NOfficio_Nombre.getText().toString(),
                         NOfficio_Asunto.getText().toString(),
@@ -370,44 +376,42 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
     
     
     
-    private void RegisterMemoran(String Clave_Memoran,
-                                 String Nombre_Memoran,
-                                 String Asunto_Memoran,
-                                 String Ubica_Memoran,
-                                 String Notas_Memoran,
-                                 String DepEnviada_Memoran,
-                                 String idDep_Memoran,
-                                 String idEstado_Memoran,
-                                 String idPersona_Memoran,
-                                 String MemoranPName,
-                                 String MemoranP64,
-                                 String MemoranRName,
-                                 String MemoranR64) {
-        ProgressDialog.Builder builder = new ProgressDialog.Builder(NuevoMemoranTrabajador.this);
-        builder.setMessage("Subiendo Memoran...");
+    private void RegisterOficio(String Clave_Oficio,
+                                String Nombre_Oficio,
+                                String Asunto_Oficio,
+                                String Ubica_Oficio,
+                                String Notas_Oficio,
+                                String DepEnviada_Oficio,
+                                String idDep_Oficio,
+                                String idEstado_Oficio,
+                                String idPersona_Oficio,
+                                String OficioPName, String OficioP64,
+                                String OficioRName, String OficioR64) {
+        ProgressDialog.Builder builder = new ProgressDialog.Builder(NuevoOficioTrabajador.this);
+        builder.setMessage("Subiendo Oficio...");
         builder.setCancelable(false);
         final android.app.AlertDialog alertDialog = builder.create();
         alertDialog.show();
         
         HashMap<String, String> map = new HashMap<>();
-        map.put("Clave_Memoran", StringUtils.unaccent(Clave_Memoran));
-        map.put("Nombre_Memoran", StringUtils.unaccent(Nombre_Memoran));
-        map.put("Asunto_Memoran", StringUtils.unaccent(Asunto_Memoran));
-        map.put("Ubica_Memoran", StringUtils.unaccent(Ubica_Memoran));
-        map.put("Notas_Memoran", StringUtils.unaccent(Notas_Memoran));
-        map.put("idDep_Memoran", StringUtils.unaccent(idDep_Memoran));
-        map.put("idEstado_Memoran", StringUtils.unaccent(idEstado_Memoran));
-        map.put("idPersona_Memoran", StringUtils.unaccent(idPersona_Memoran));
-        map.put("DepEnviada_Memoran", StringUtils.unaccent(DepEnviada_Memoran));
-        map.put("MemoranPName", StringUtils.unaccent(MemoranPName));
-        map.put("MemoranP64", MemoranP64);
-        map.put("MemoranRName", StringUtils.unaccent(MemoranRName));
-        map.put("MemoranR64", MemoranR64);
+        map.put("Clave_Oficio", StringUtils.unaccent(Clave_Oficio));
+        map.put("Nombre_Oficio", StringUtils.unaccent(Nombre_Oficio));
+        map.put("Asunto_Oficio", StringUtils.unaccent(Asunto_Oficio));
+        map.put("Ubica_Oficio", StringUtils.unaccent(Ubica_Oficio));
+        map.put("Notas_Oficio", StringUtils.unaccent(Notas_Oficio));
+        map.put("idDep_Oficio", StringUtils.unaccent(idDep_Oficio));
+        map.put("idEstado_Oficio", StringUtils.unaccent(idEstado_Oficio));
+        map.put("idPersona_Oficio", StringUtils.unaccent(idPersona_Oficio));
+        map.put("DepEnviada_Oficio", StringUtils.unaccent(DepEnviada_Oficio));
+        map.put("OficioP", StringUtils.unaccent(OficioPName));
+        map.put("OficioP64", OficioP64);
+        map.put("OficioR", StringUtils.unaccent(OficioRName));
+        map.put("OficioR64", OficioR64);
         JSONObject object = new JSONObject(map);
         Log.e("HashMap", object.toString());
         JsonObjectRequest Req = new JsonObjectRequest(
                 Request.Method.POST,
-                WS_SubirMemoran,
+                WS_SubirOficio,
                 object,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -416,20 +420,18 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
                             alertDialog.dismiss();
                             Log.e("WS-Response",response.toString());
                             if (response.getString("Response").equals("Success")){
-                                new AlertDFont.Builder(NuevoMemoranTrabajador.this)
-                                        .setMessage("Informacion Guardada")
-                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                new AlertDFont.Builder(NuevoOficioTrabajador.this)
+                                        .setMessage("Informacion Guardada").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
-                                        NuevoMemoranTrabajador.this.finish();
+                                        NuevoOficioTrabajador.this.finish();
                                     }
                                 }).show();
                             }else{
                                 // TODO: Guardar localmente
-                                new AlertDFont.Builder(NuevoMemoranTrabajador.this)
-                                        .setMessage("Su solicitud no se ha podido realizar con exito.")
-                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                new AlertDFont.Builder(NuevoOficioTrabajador.this)
+                                        .setMessage("Su solicitud no se ha podido realizar con exito.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
@@ -446,7 +448,7 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         alertDialog.dismiss();
                         Log.d("TAG", "Error Volley: " + error.getCause());
-                        new AlertDFont.Builder(NuevoMemoranTrabajador.this).setMessage(error.getCause().toString()).show();
+                        new AlertDFont.Builder(NuevoOficioTrabajador.this).setMessage(error.getCause().toString()).show();
                     }
                 }
         ) {
@@ -459,22 +461,23 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
             }
         };
         Req.setRetryPolicy(new DefaultRetryPolicy(30000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getInstance().addToRequestQueue(Req);
+        BeeDocsApplication.getInstance().addToRequestQueue(Req);
     }
     
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode==Constant.Camera_CODE && resultCode==RESULT_OK){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Constant.Camera_CODE && resultCode == RESULT_OK) {
             setPic();
         }
-        if (requestCode==Constant.Camera_CODE_Entregado && resultCode==RESULT_OK){
+        if (requestCode == Constant.Camera_CODE_Entregado && resultCode == RESULT_OK) {
             setPicEntregada();
         }
-        if (requestCode == Constant.getgallery && resultCode == RESULT_OK){
+        if (requestCode == getgallery && resultCode == RESULT_OK) {
             try {
                 @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                InputStream inputStream = NuevoMemoranTrabajador.this.getContentResolver().openInputStream(data.getData());
+                InputStream inputStream = NuevoOficioTrabajador.this.getContentResolver().openInputStream(data.getData());
                 String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
                 Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream));
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -486,10 +489,10 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        if (requestCode == getgallery_entregado && resultCode == RESULT_OK){
+        if (requestCode == getgallery_entregado && resultCode == RESULT_OK) {
             try {
                 @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                InputStream inputStream = NuevoMemoranTrabajador.this.getContentResolver().openInputStream(data.getData());
+                InputStream inputStream = NuevoOficioTrabajador.this.getContentResolver().openInputStream(data.getData());
                 String imageFileName = getResources().getString(R.string.app_name) + "_" + timestamp;
                 Bitmap bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream));
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -505,8 +508,8 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
     
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                              CAMARA PERMISSION
     private void getcamara() {
-        if (ContextCompat.checkSelfPermission(NuevoMemoranTrabajador.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(NuevoMemoranTrabajador.this, new String[]{
+        if (ContextCompat.checkSelfPermission(NuevoOficioTrabajador.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(NuevoOficioTrabajador.this, new String[]{
                     Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.READ_EXTERNAL_STORAGE
@@ -545,7 +548,7 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
         String imageFileName = getResources().getString(R.string.app_name)+"_"+ timestamp;
         File storageDir = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            storageDir = (Objects.requireNonNull(NuevoMemoranTrabajador.this)).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            storageDir = (Objects.requireNonNull(NuevoOficioTrabajador.this)).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         }
         mCurrentPhotoNamePendiente = imageFileName+".jpg";
         imagePendiente = File.createTempFile(imageFileName, ".jpg", storageDir);
@@ -574,7 +577,7 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
         bmOptions.inPurgeable = true;
         
         try {
-            int m_compress = 50;
+            int m_compress = 100;
             Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPathPendiente, bmOptions);
             NOfficio_RutaPendiente.setText(mCurrentPhotoNamePendiente);
             outputStreamPendiente = new FileOutputStream(imagePendiente);
@@ -582,17 +585,18 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
             //            imagen_camara.setImageBitmap(bitmap);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
-            mCurrentPhotoBase64Pendiente = Base64.encodeToString(os.toByteArray(), Base64.DEFAULT);
+            mCurrentPhotoBase64Pendiente =Base64.encodeToString(os.toByteArray(), Base64.DEFAULT);
             outputStreamPendiente.flush();
             outputStreamPendiente.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                              CAMARA PERMISSION ENTREGADO
     private void getcamaraEntregada() {
-        if (ContextCompat.checkSelfPermission(NuevoMemoranTrabajador.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(NuevoMemoranTrabajador.this, new String[]{
+        if (ContextCompat.checkSelfPermission(NuevoOficioTrabajador.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(NuevoOficioTrabajador.this, new String[]{
                     Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.READ_EXTERNAL_STORAGE
@@ -631,7 +635,7 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
         String imageFileName = getResources().getString(R.string.app_name)+"_"+ timestamp;
         File storageDir = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            storageDir = (Objects.requireNonNull(NuevoMemoranTrabajador.this)).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            storageDir = (Objects.requireNonNull(NuevoOficioTrabajador.this)).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         }
         mCurrentPhotoNameEntregada = imageFileName+".jpg";
         imageEntregada = File.createTempFile(imageFileName, ".jpg", storageDir);
@@ -660,7 +664,7 @@ public class NuevoMemoranTrabajador extends AppCompatActivity {
         bmOptions.inPurgeable = true;
         
         try {
-            int m_compress = 50;
+            int m_compress = 100;
             Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPathEntregada, bmOptions);
             NOfficio_RutaEntregada.setText(mCurrentPhotoNameEntregada);
             outputStreamEntregada = new FileOutputStream(imageEntregada);

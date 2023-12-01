@@ -1,4 +1,4 @@
-package com.BeeDocs;
+package com.BeeDocs.dialog;
 
 import android.app.ProgressDialog;
 import android.content.Context;
