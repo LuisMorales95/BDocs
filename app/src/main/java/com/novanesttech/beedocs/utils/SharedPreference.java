@@ -8,6 +8,7 @@ import com.novanesttech.beedocs.BeeDocsApplication;
 
 public class SharedPreference {
 
+
     public static void SETSharedPreferences(String Tag, String Value) {
         SharedPreferences preferences = BeeDocsApplication.getContext().getSharedPreferences("InfoPersonal", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -19,5 +20,4 @@ public class SharedPreference {
         SharedPreferences preferences = BeeDocsApplication.getContext().getSharedPreferences("InfoPersonal", Context.MODE_PRIVATE);
         return preferences.getString(Tag, Value);
     }
-
 }

@@ -16,14 +16,14 @@ class VolleyConnection(val context: Context) {
 	private var imageLoader: ImageLoader? = null
 	
 	private fun getRequestQueue(): RequestQueue? {
-		if (requestQueue != null) {
+		if (requestQueue == null) {
 			requestQueue = Volley.newRequestQueue(context)
 		}
 		return requestQueue
 	}
 	
 	fun getImageLoader(): ImageLoader? {
-		if (imageLoader != null) {
+		if (imageLoader == null) {
 			imageLoader = ImageLoader(getRequestQueue(), LruBitmapCache())
 		}
 		return imageLoader
