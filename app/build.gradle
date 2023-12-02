@@ -1,18 +1,19 @@
 plugins {
     id 'kotlin-android'
     id 'com.android.application'
-    id 'kotlin-android-extensions'
+    id 'kotlin-parcelize'
 }
 android {
     compileSdk 33
     defaultConfig {
-        applicationId "com.beedocs"
+        applicationId "com.novanesttech.beedocs"
         minSdkVersion 19
         targetSdkVersion 33
         versionCode 8
         versionName "1.0.8"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         multiDexEnabled true
+
     }
     buildTypes {
         release {
@@ -22,10 +23,13 @@ android {
         debug {
         }
     }
-    namespace 'com.BeeDocs'
+    namespace 'com.novanesttech.beedocs'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+    }
+    buildFeatures {
+        dataBinding true
     }
     kotlinOptions {
         jvmTarget = '17'
@@ -37,8 +41,6 @@ dependencies {
     implementation project(':domain')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation files('libs/itext5-itextpdf-5.5.12.jar')
-    implementation files('libs/itext5-xmlworker-5.5.12.jar')
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.21"
     implementation 'com.google.android.material:material:1.8.0'
@@ -52,6 +54,5 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     implementation 'commons-io:commons-io:2.6'
-    implementation "androidx.multidex:multidex:2.0.1"
 
 }
