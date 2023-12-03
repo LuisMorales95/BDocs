@@ -1,7 +1,6 @@
 package com.novanesttech.beedocs.utils
 
 import android.content.Context
-import com.novanesttech.beedocs.BeeDocsApplication.Companion.getContext
 
 class UserInfoPreference(
     context: Context
